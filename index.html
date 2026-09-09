@@ -23,7 +23,7 @@
     --r2: #7C4DFF; --r2-light: #F3EEFF;
     --r3: #0EA5A0; --r3-light: #E0F5F4;
     --r4: #F59E0B; --r4-light: #FFFBE6;
-    --radius: 14px;
+    --radius: 16px;
     --shadow: 0 2px 16px rgba(10,40,60,0.08);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -34,16 +34,17 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    font-size: 17px;
   }
 
   /* HEADER */
   header {
     background: var(--navy);
     color: var(--white);
-    padding: 16px 28px;
+    padding: 20px 36px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
     position: sticky; top: 0; z-index: 100;
     box-shadow: 0 2px 12px rgba(0,0,0,0.2);
   }
@@ -51,44 +52,44 @@
     background: var(--yellow);
     color: var(--navy);
     font-weight: 900;
-    font-size: 12px;
-    padding: 4px 10px;
-    border-radius: 6px;
+    font-size: 15px;
+    padding: 6px 14px;
+    border-radius: 8px;
   }
-  header h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
-  header .sub { font-size: 12px; color: var(--mint-mid); margin-left: auto; }
+  header h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+  header .sub { font-size: 15px; color: var(--mint-mid); margin-left: auto; }
 
   /* LAYOUT */
   .app-shell {
     display: flex;
     flex: 1;
-    max-width: 1100px;
+    max-width: 1400px;
     margin: 0 auto;
     width: 100%;
-    padding: 24px 18px;
-    gap: 22px;
+    padding: 32px 28px;
+    gap: 28px;
   }
 
   /* SIDEBAR */
   .sidebar {
-    width: 220px;
+    width: 280px;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    gap: 9px;
+    gap: 12px;
   }
   .sidebar-label {
-    font-size: 10.5px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--navy-mid);
     letter-spacing: 0.6px;
     text-transform: uppercase;
-    margin-bottom: 3px;
+    margin-bottom: 4px;
   }
   .recipe-btn {
     border: none;
-    border-radius: 12px;
-    padding: 13px 15px;
+    border-radius: 14px;
+    padding: 18px 20px;
     cursor: pointer;
     text-align: left;
     background: var(--white);
@@ -101,166 +102,181 @@
     content: '';
     position: absolute;
     left: 0; top: 0; bottom: 0;
-    width: 4px;
+    width: 5px;
   }
   .recipe-btn.r1::before { background: var(--r1); }
   .recipe-btn.r2::before { background: var(--r2); }
   .recipe-btn.r3::before { background: var(--r3); }
   .recipe-btn.r4::before { background: var(--r4); }
-  .recipe-btn .rnum { font-size: 10px; font-weight: 700; margin-bottom: 2px; }
+  .recipe-btn .rnum { font-size: 12px; font-weight: 700; margin-bottom: 4px; }
   .recipe-btn.r1 .rnum { color: var(--r1); }
   .recipe-btn.r2 .rnum { color: var(--r2); }
   .recipe-btn.r3 .rnum { color: var(--r3); }
   .recipe-btn.r4 .rnum { color: var(--r4); }
-  .recipe-btn .rtitle { font-size: 13px; font-weight: 700; color: var(--navy); line-height: 1.3; }
-  .recipe-btn .rdesc { font-size: 11px; color: var(--navy-mid); margin-top: 3px; line-height: 1.4; }
-  .recipe-btn:hover { transform: translateX(2px); box-shadow: 0 4px 18px rgba(10,40,60,0.13); }
+  .recipe-btn .rtitle { font-size: 17px; font-weight: 700; color: var(--navy); line-height: 1.3; }
+  .recipe-btn .rdesc { font-size: 13px; color: var(--navy-mid); margin-top: 5px; line-height: 1.5; }
+  .recipe-btn:hover { transform: translateX(3px); box-shadow: 0 4px 18px rgba(10,40,60,0.13); }
   .recipe-btn.active.r1 { background: var(--r1-light); }
   .recipe-btn.active.r2 { background: var(--r2-light); }
   .recipe-btn.active.r3 { background: var(--r3-light); }
   .recipe-btn.active.r4 { background: var(--r4-light); }
 
   .mode-toggle {
-    margin-top: 6px;
+    margin-top: 0;
     background: var(--white);
-    border-radius: 12px;
-    padding: 13px;
+    border-radius: 14px;
+    padding: 18px;
     box-shadow: var(--shadow);
   }
-  .mode-radio { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .mode-radio { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
   .mode-radio label {
     display: flex;
     align-items: center;
-    gap: 7px;
-    font-size: 12px;
+    gap: 10px;
+    font-size: 15px;
     font-weight: 500;
     cursor: pointer;
     color: var(--navy-mid);
-    padding: 7px 10px;
-    border-radius: 8px;
-    border: 1.5px solid transparent;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 2px solid transparent;
     transition: all 0.14s;
   }
   .mode-radio label:hover { background: var(--grey-light); }
-  .mode-radio input[type=radio] { accent-color: var(--mint); }
+  .mode-radio input[type=radio] { accent-color: var(--mint); width: 18px; height: 18px; }
   .mode-radio label.selected { border-color: var(--mint); background: var(--mint-light); color: var(--navy); }
 
   /* MAIN */
-  .main-panel { flex: 1; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .main-panel { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
 
   .recipe-info-bar {
     border-radius: var(--radius);
-    padding: 15px 18px;
+    padding: 20px 24px;
     background: var(--white);
     box-shadow: var(--shadow);
     display: flex;
     align-items: flex-start;
-    gap: 12px;
-    border-left: 5px solid var(--mint);
+    gap: 16px;
+    border-left: 6px solid var(--mint);
     transition: border-color 0.2s;
   }
-  .recipe-info-bar .emoji { font-size: 26px; flex-shrink: 0; }
-  .recipe-info-bar h2 { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
-  .recipe-info-bar p { font-size: 12px; color: var(--navy-mid); line-height: 1.65; }
+  .recipe-info-bar .emoji { font-size: 34px; flex-shrink: 0; }
+  .recipe-info-bar h2 { font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+  .recipe-info-bar p { font-size: 15px; color: var(--navy-mid); line-height: 1.7; }
   .recipe-info-bar .tip {
-    margin-top: 5px;
-    font-size: 11px;
+    margin-top: 8px;
+    font-size: 14px;
     background: var(--yellow-light);
-    border-radius: 6px;
-    padding: 4px 9px;
+    border-radius: 8px;
+    padding: 6px 12px;
     color: #7A6000;
     display: inline-block;
-    line-height: 1.5;
+    line-height: 1.6;
   }
 
   .input-block {
     background: var(--white);
     border-radius: var(--radius);
-    padding: 20px;
+    padding: 26px;
     box-shadow: var(--shadow);
   }
   .input-block label {
     display: block;
-    font-size: 13px;
+    font-size: 17px;
     font-weight: 700;
     color: var(--navy);
-    margin-bottom: 9px;
+    margin-bottom: 12px;
   }
-  .topic-row { display: flex; gap: 9px; margin-bottom: 12px; }
-  .topic-row input, textarea {
-    border: 1.5px solid var(--grey-mid);
-    border-radius: 10px;
-    padding: 10px 13px;
+  .topic-row { display: flex; gap: 10px; margin-bottom: 14px; }
+  .topic-row input {
+    flex: 1;
+    border: 2px solid var(--grey-mid);
+    border-radius: 12px;
+    padding: 14px 16px;
     font-family: inherit;
-    font-size: 13px;
+    font-size: 16px;
     outline: none;
     color: var(--navy);
     transition: border-color 0.14s;
     background: #FAFCFC;
   }
-  .topic-row input { flex: 1; }
-  .topic-row input:focus, textarea:focus { border-color: var(--mint); background: var(--white); }
-  textarea { width: 100%; min-height: 96px; resize: vertical; line-height: 1.7; font-size: 13.5px; }
-  .char-count { font-size: 11px; color: var(--grey-mid); text-align: right; margin-top: 4px; }
+  .topic-row input:focus { border-color: var(--mint); background: var(--white); }
+  textarea {
+    width: 100%;
+    border: 2px solid var(--grey-mid);
+    border-radius: 12px;
+    padding: 16px;
+    font-family: inherit;
+    font-size: 17px;
+    min-height: 130px;
+    resize: vertical;
+    line-height: 1.75;
+    outline: none;
+    color: var(--navy);
+    transition: border-color 0.14s;
+    background: #FAFCFC;
+  }
+  textarea:focus { border-color: var(--mint); background: var(--white); }
+  .char-count { font-size: 13px; color: var(--grey-mid); text-align: right; margin-top: 6px; }
 
   .btn-primary {
     background: var(--mint);
     color: var(--white);
     border: none;
-    border-radius: 10px;
-    padding: 11px 26px;
+    border-radius: 12px;
+    padding: 16px 36px;
     font-family: inherit;
-    font-size: 14px;
+    font-size: 18px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.17s;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    margin-top: 12px;
+    gap: 8px;
+    margin-top: 16px;
   }
-  .btn-primary:hover { background: #0C9490; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(14,165,160,0.35); }
+  .btn-primary:hover { background: #0C9490; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(14,165,160,0.35); }
   .btn-primary:disabled { background: var(--grey-mid); cursor: not-allowed; transform: none; box-shadow: none; }
 
   /* RESULT */
   .result-area {
     background: var(--white);
     border-radius: var(--radius);
-    padding: 20px;
+    padding: 26px;
     box-shadow: var(--shadow);
     animation: fadeUp 0.28s ease;
     display: none;
   }
   .result-area.visible { display: block; }
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(8px); }
+    from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .result-header { display: flex; align-items: center; margin-bottom: 14px; }
-  .result-header h3 { font-size: 14px; font-weight: 700; color: var(--navy); }
+  .result-header { display: flex; align-items: center; margin-bottom: 18px; }
+  .result-header h3 { font-size: 19px; font-weight: 700; color: var(--navy); }
 
   .score-ring {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
     background: var(--grey-light);
-    border-radius: 12px;
-    padding: 10px 15px;
-    margin-bottom: 14px;
+    border-radius: 14px;
+    padding: 14px 20px;
+    margin-bottom: 18px;
   }
   .score-circle {
-    width: 50px; height: 50px;
+    width: 68px; height: 68px;
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-size: 17px; font-weight: 900;
+    font-size: 24px; font-weight: 900;
     flex-shrink: 0;
   }
-  .score-text { font-size: 11.5px; color: var(--navy-mid); line-height: 1.6; }
-  .score-text strong { font-size: 13px; color: var(--navy); display: block; margin-bottom: 1px; }
+  .score-text { font-size: 15px; color: var(--navy-mid); line-height: 1.7; }
+  .score-text strong { font-size: 18px; color: var(--navy); display: block; margin-bottom: 2px; }
 
-  .feedback-section { margin-bottom: 12px; border-radius: 9px; overflow: hidden; }
-  .fb-head { font-size: 12px; font-weight: 700; padding: 7px 13px; display: flex; align-items: center; gap: 5px; }
-  .fb-body { font-size: 13px; line-height: 1.75; padding: 11px 13px; color: var(--text-body); }
+  .feedback-section { margin-bottom: 16px; border-radius: 12px; overflow: hidden; }
+  .fb-head { font-size: 15px; font-weight: 700; padding: 10px 16px; display: flex; align-items: center; gap: 6px; }
+  .fb-body { font-size: 16px; line-height: 1.8; padding: 14px 16px; color: var(--text-body); }
   .fb-good .fb-head { background: #ECFDF5; color: #065F46; }
   .fb-good .fb-body { background: #F9FFFE; }
   .fb-improve .fb-head { background: #FFF7ED; color: #92400E; }
@@ -271,64 +287,55 @@
   .fb-generated .fb-body { background: #F8F4FF; }
 
   .question-item {
-    padding: 9px 0;
+    padding: 12px 0;
     border-bottom: 1px solid var(--grey-light);
     display: flex;
-    gap: 9px;
+    gap: 12px;
     align-items: flex-start;
   }
   .question-item:last-child { border-bottom: none; }
   .q-badge {
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 700;
-    padding: 2px 8px;
+    padding: 3px 10px;
     border-radius: 20px;
     white-space: nowrap;
     flex-shrink: 0;
-    margin-top: 2px;
+    margin-top: 3px;
   }
-  .q-text { font-size: 13px; line-height: 1.65; color: var(--navy); }
+  .q-text { font-size: 16px; line-height: 1.7; color: var(--navy); }
 
   /* LOADING */
-  .loading-wrap { display: flex; flex-direction: column; align-items: center; padding: 28px; gap: 12px; }
+  .loading-wrap { display: flex; flex-direction: column; align-items: center; padding: 40px; gap: 16px; }
   .spinner {
-    width: 34px; height: 34px;
-    border: 3px solid var(--mint-light);
+    width: 44px; height: 44px;
+    border: 4px solid var(--mint-light);
     border-top-color: var(--mint);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-wrap p { font-size: 13px; color: var(--navy-mid); }
+  .loading-wrap p { font-size: 16px; color: var(--navy-mid); }
 
   /* HISTORY */
-  .history-area { background: var(--white); border-radius: var(--radius); padding: 16px 20px; box-shadow: var(--shadow); }
-  .history-area h3 { font-size: 13px; font-weight: 700; color: var(--navy-mid); margin-bottom: 10px; }
+  .history-area { background: var(--white); border-radius: var(--radius); padding: 20px 26px; box-shadow: var(--shadow); }
+  .history-area h3 { font-size: 16px; font-weight: 700; color: var(--navy-mid); margin-bottom: 12px; }
   .history-item {
-    border: 1.5px solid var(--grey-light);
-    border-radius: 8px;
-    padding: 9px 13px;
-    font-size: 12px;
+    border: 2px solid var(--grey-light);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 14px;
     color: var(--navy-mid);
     cursor: pointer;
     transition: all 0.13s;
     display: flex;
     align-items: center;
-    gap: 7px;
-    margin-bottom: 7px;
+    gap: 10px;
+    margin-bottom: 8px;
   }
   .history-item:hover { border-color: var(--mint); color: var(--navy); background: var(--mint-light); }
   .h-recipe { font-weight: 700; }
   .h-q { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-  @media (max-width: 720px) {
-    .app-shell { flex-direction: column; padding: 14px 10px; }
-    .sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; gap: 7px; }
-    .recipe-btn { flex: 1; min-width: 130px; }
-    .mode-toggle { width: 100%; }
-    .mode-radio { flex-direction: row; }
-    header .sub { display: none; }
-  }
 </style>
 </head>
 <body>
@@ -340,9 +347,22 @@
 </header>
 
 <div class="app-shell">
-  <!-- SIDEBAR -->
   <div class="sidebar">
-    <div class="sidebar-label">레시피 선택</div>
+    <div class="mode-toggle">
+      <div class="sidebar-label">모드</div>
+      <div class="mode-radio">
+        <label class="selected" id="label-feedback">
+          <input type="radio" name="mode" value="feedback" checked onchange="switchMode('feedback')">
+          🔍 내 질문 평가받기
+        </label>
+        <label id="label-generate">
+          <input type="radio" name="mode" value="generate" onchange="switchMode('generate')">
+          ✨ 질문 생성하기
+        </label>
+      </div>
+    </div>
+
+    <div class="sidebar-label" style="margin-top:8px;">레시피 선택</div>
     <button class="recipe-btn r1 active" onclick="selectRecipe(1)">
       <div class="rnum">RECIPE 1</div>
       <div class="rtitle">5W1H 변형하기</div>
@@ -363,29 +383,14 @@
       <div class="rtitle">열린 질문 만들기</div>
       <div class="rdesc">닫힌 → 열린 질문으로 전환</div>
     </button>
-
-    <div class="mode-toggle">
-      <div class="sidebar-label">모드</div>
-      <div class="mode-radio">
-        <label class="selected" id="label-feedback">
-          <input type="radio" name="mode" value="feedback" checked onchange="switchMode('feedback')">
-          🔍 내 질문 평가받기
-        </label>
-        <label id="label-generate">
-          <input type="radio" name="mode" value="generate" onchange="switchMode('generate')">
-          ✨ 질문 생성하기
-        </label>
-      </div>
-    </div>
   </div>
 
-  <!-- MAIN -->
   <div class="main-panel">
     <div class="recipe-info-bar" id="infoBar">
       <div class="emoji" id="infoEmoji">🔀</div>
       <div>
         <h2 id="infoTitle">레시피 1 · 5W1H 변형하기</h2>
-        <p id="infoDesc">who / when / where / what / why / how 중 하나를 골라, 거기에 <strong>"만약에(if)"</strong>를 추가해 단순 사실 확인 질문을 상상력 질문으로 바꾸는 기법입니다.</p>
+        <p id="infoDesc">who / when / where / what / why / how 중 하나를 골라, <strong>"만약에(if)"</strong>를 추가해 상상력 질문으로 바꾸는 기법입니다.</p>
         <span class="tip" id="infoTip">💡 예: "이순신 장군은 누구인가요?" → "만약 이순신 장군에게 거북선이 없었다면 전쟁은 어떻게 달라졌을까요?"</span>
       </div>
     </div>
@@ -419,34 +424,13 @@
 </div>
 
 <script>
-  // ★ 배포 후 Render URL로 변경하세요
   const API_BASE = 'https://sunchangq-production.up.railway.app';
 
   const RECIPES = {
-    1: {
-      emoji: '🔀', color: 'var(--r1)',
-      title: '레시피 1 · 5W1H 변형하기',
-      desc: 'who / when / where / what / why / how 중 하나를 골라, <strong>"만약에(if)"</strong>를 추가해 상상력 질문으로 바꾸는 기법입니다.',
-      tip: '💡 예: "이순신 장군은 누구인가요?" → "만약 이순신 장군에게 거북선이 없었다면 전쟁은 어떻게 달라졌을까요?"'
-    },
-    2: {
-      emoji: '🔎', color: 'var(--r2)',
-      title: '레시피 2 · 5-Why 기법',
-      desc: '현상의 표면이 아니라 <strong>본질적 이유</strong>를 파고들어 봅니다. "왜?"를 5번 반복하며 더 깊은 질문으로 나아가는 기법입니다.',
-      tip: '💡 예: "왜 친구들의 소식이 궁금할까?" → "왜 불안감을 느낄까?" → "왜 자꾸 SNS에 접속할까?" …'
-    },
-    3: {
-      emoji: '⊞', color: 'var(--r3)',
-      title: '레시피 3 · Q-Matrix 기법',
-      desc: '<strong>가로축(사실/예측·상상/가치·판단)</strong> × <strong>세로축(WHAT/WHO/HOW/WHY)</strong>를 조합해 수준 높은 질문을 만드는 기법입니다.',
-      tip: '💡 표에서 단어 두 개만 골라봐, 오른쪽 아래로 갈수록 사고력 점수는 올라가!'
-    },
-    4: {
-      emoji: '🔓', color: 'var(--r4)',
-      title: '레시피 4 · 열린 질문 만들기',
-      desc: '닫힌 자물쇠(네/아니오) 질문을 열린 열쇠(다양한 생각) 질문으로 바꾸는 기법입니다. <strong>정답이 하나가 아닌 질문</strong>을 만들어보세요.',
-      tip: '💡 "세종대왕은 백성을 아꼈나요?" → "세종대왕이 한글을 창제할 때 가장 중요하게 생각한 가치는 무엇이며 오늘날 우리에게 어떤 의미가 있을까요?"'
-    }
+    1: { emoji: '🔀', color: 'var(--r1)', title: '레시피 1 · 5W1H 변형하기', desc: 'who / when / where / what / why / how 중 하나를 골라, <strong>"만약에(if)"</strong>를 추가해 상상력 질문으로 바꾸는 기법입니다.', tip: '💡 예: "이순신 장군은 누구인가요?" → "만약 이순신 장군에게 거북선이 없었다면 전쟁은 어떻게 달라졌을까요?"' },
+    2: { emoji: '🔎', color: 'var(--r2)', title: '레시피 2 · 5-Why 기법', desc: '현상의 표면이 아니라 <strong>본질적 이유</strong>를 파고들어 봅니다. "왜?"를 5번 반복하며 더 깊은 질문으로 나아가는 기법입니다.', tip: '💡 예: "왜 친구들의 소식이 궁금할까?" → "왜 불안감을 느낄까?" → "왜 자꾸 SNS에 접속할까?" …' },
+    3: { emoji: '⊞', color: 'var(--r3)', title: '레시피 3 · Q-Matrix 기법', desc: '<strong>가로축(사실/예측·상상/가치·판단)</strong> × <strong>세로축(WHAT/WHO/HOW/WHY)</strong>를 조합해 수준 높은 질문을 만드는 기법입니다.', tip: '💡 표에서 단어 두 개만 골라봐, 오른쪽 아래로 갈수록 사고력 점수는 올라가!' },
+    4: { emoji: '🔓', color: 'var(--r4)', title: '레시피 4 · 열린 질문 만들기', desc: '닫힌 자물쇠(네/아니오) 질문을 열린 열쇠(다양한 생각) 질문으로 바꾸는 기법입니다. <strong>정답이 하나가 아닌 질문</strong>을 만들어보세요.', tip: '💡 "세종대왕은 백성을 아꼈나요?" → "세종대왕이 한글을 창제할 때 가장 중요하게 생각한 가치는 무엇이며 오늘날 우리에게 어떤 의미가 있을까요?"' }
   };
 
   let currentRecipe = 1;
@@ -488,13 +472,8 @@
   }
 
   function showLoading() {
-    const ra = document.getElementById('resultArea');
-    ra.classList.add('visible');
-    document.getElementById('resultContent').innerHTML = `
-      <div class="loading-wrap">
-        <div class="spinner"></div>
-        <p>AI 코치가 분석 중이에요…</p>
-      </div>`;
+    document.getElementById('resultArea').classList.add('visible');
+    document.getElementById('resultContent').innerHTML = '<div class="loading-wrap"><div class="spinner"></div><p>AI 코치가 분석 중이에요…</p></div>';
   }
 
   function scoreColor(s) {
@@ -519,13 +498,7 @@
     const list = document.getElementById('historyList');
     if (!history.length) { area.style.display = 'none'; return; }
     area.style.display = 'block';
-    list.innerHTML = history.map((h, i) => `
-      <div class="history-item" onclick="restoreHistory(${i})">
-        <span class="h-recipe">[R${h.recipe}]</span>
-        <span class="h-q">${h.label}</span>
-        <span style="color:${scoreColor(h.score || 0)};font-weight:700;font-size:11px;">${h.score ? h.score + '점' : '생성'}</span>
-        <span style="color:var(--grey-mid);font-size:10px;">${h.time}</span>
-      </div>`).join('');
+    list.innerHTML = history.map((h, i) => '<div class="history-item" onclick="restoreHistory(' + i + ')"><span class="h-recipe">[R' + h.recipe + ']</span><span class="h-q">' + h.label + '</span><span style="color:' + scoreColor(h.score || 0) + ';font-weight:700;font-size:13px;">' + (h.score ? h.score + '점' : '생성') + '</span><span style="color:var(--grey-mid);font-size:12px;">' + h.time + '</span></div>').join('');
   }
 
   function restoreHistory(i) {
@@ -541,43 +514,22 @@
     const btn = document.getElementById('runBtn');
     const question = document.getElementById('questionInput').value.trim();
     const topic = document.getElementById('topicInput').value.trim();
-
     if (currentMode === 'feedback' && !question) { alert('질문을 먼저 입력해주세요!'); return; }
     if (currentMode === 'generate' && !topic) { alert('주제나 키워드를 입력해주세요!'); return; }
-
     btn.disabled = true;
     showLoading();
-
     try {
       const body = { recipe: currentRecipe, mode: currentMode };
       if (currentMode === 'feedback') body.question = question;
       else body.topic = topic;
-
-      const res = await fetch(`${API_BASE}/api/coach`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || '서버 오류');
-      }
-
+      const res = await fetch(API_BASE + '/api/coach', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      if (!res.ok) { const err = await res.json(); throw new Error(err.error || '서버 오류'); }
       const { result } = await res.json();
-
-      if (currentMode === 'feedback') {
-        renderFeedback(result, question);
-        addHistory(currentRecipe, question, result.score);
-      } else {
-        renderGenerated(result, topic);
-        addHistory(currentRecipe, `[생성] ${topic}`, null);
-      }
+      if (currentMode === 'feedback') { renderFeedback(result, question); addHistory(currentRecipe, question, result.score); }
+      else { renderGenerated(result, topic); addHistory(currentRecipe, '[생성] ' + topic, null); }
     } catch (e) {
-      document.getElementById('resultContent').innerHTML =
-        `<div style="padding:20px;color:#EF4444;text-align:center;">⚠️ 오류가 발생했습니다.<br><small>${e.message}</small></div>`;
+      document.getElementById('resultContent').innerHTML = '<div style="padding:24px;color:#EF4444;text-align:center;font-size:16px;">⚠️ 오류가 발생했습니다.<br><small>' + e.message + '</small></div>';
     }
-
     btn.disabled = false;
   }
 
@@ -585,119 +537,44 @@
     const sc = scoreColor(d.score);
     const em = scoreEmoji(d.grade);
     let extraHtml = '';
-
     if (currentRecipe === 2 && d.whyChain) {
-      extraHtml = `<div class="feedback-section fb-improve">
-        <div class="fb-head">🔗 왜? 연쇄 흐름</div>
-        <div class="fb-body">${d.whyChain.map((w, i) =>
-          `<div style="margin-bottom:5px;padding-left:${i * 12}px;">${i > 0 ? '↳ ' : ''}${w}</div>`).join('')}</div>
-      </div>`;
+      extraHtml = '<div class="feedback-section fb-improve"><div class="fb-head">🔗 왜? 연쇄 흐름</div><div class="fb-body">' + d.whyChain.map((w, i) => '<div style="margin-bottom:6px;padding-left:' + (i * 16) + 'px;">' + (i > 0 ? '↳ ' : '') + w + '</div>').join('') + '</div></div>';
     }
     if (currentRecipe === 3 && d.matrixRow) {
       const lc = d.matrixLevel === '심화' ? '#059669' : d.matrixLevel === '중급' ? '#0EA5A0' : '#F59E0B';
-      extraHtml = `<div style="margin-bottom:10px;display:flex;gap:7px;align-items:center;flex-wrap:wrap;">
-        <span style="font-size:12px;font-weight:700;color:var(--navy-mid);">매트릭스 위치:</span>
-        <span style="background:var(--navy);color:white;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">${d.matrixRow}</span>
-        <span style="color:var(--grey-mid);">×</span>
-        <span style="background:var(--navy);color:white;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">${d.matrixCol}</span>
-        <span style="background:${lc};color:white;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">📊 ${d.matrixLevel}</span>
-      </div>`;
+      extraHtml = '<div style="margin-bottom:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><span style="font-size:15px;font-weight:700;color:var(--navy-mid);">매트릭스 위치:</span><span style="background:var(--navy);color:white;padding:4px 12px;border-radius:20px;font-size:14px;font-weight:700;">' + d.matrixRow + '</span><span style="color:var(--grey-mid);">×</span><span style="background:var(--navy);color:white;padding:4px 12px;border-radius:20px;font-size:14px;font-weight:700;">' + d.matrixCol + '</span><span style="background:' + lc + ';color:white;padding:4px 12px;border-radius:20px;font-size:14px;font-weight:700;">📊 ' + d.matrixLevel + '</span></div>';
     }
     if (currentRecipe === 4 && d.questionType) {
       const isOpen = d.questionType.includes('잘 열린');
       const isHalf = d.questionType.includes('반쯤');
       const tc = isOpen ? '#059669' : isHalf ? '#F59E0B' : '#EF4444';
-      extraHtml = `<div style="margin-bottom:10px;">
-        <span style="background:${tc}20;color:${tc};padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;border:1.5px solid ${tc}40;">🔓 ${d.questionType}</span>
-      </div>`;
+      extraHtml = '<div style="margin-bottom:12px;"><span style="background:' + tc + '20;color:' + tc + ';padding:5px 14px;border-radius:20px;font-size:15px;font-weight:700;border:2px solid ' + tc + '40;">🔓 ' + d.questionType + '</span></div>';
     }
-
-    document.getElementById('resultContent').innerHTML = `
-      <div class="result-header"><h3>📊 AI 코치 피드백</h3></div>
-      <div class="score-ring">
-        <div class="score-circle" style="background:${sc}20;color:${sc};border:3px solid ${sc};">${d.score}</div>
-        <div class="score-text">
-          <strong>${em} ${d.gradeLabel}</strong>
-          레시피 ${currentRecipe} 기준 · ${d.grade}등급
-        </div>
-      </div>
-      ${extraHtml}
-      <div class="feedback-section fb-good">
-        <div class="fb-head">✅ 잘된 점</div>
-        <div class="fb-body">${d.good}</div>
-      </div>
-      <div class="feedback-section fb-improve">
-        <div class="fb-head">💡 이렇게 발전시켜봐요</div>
-        <div class="fb-body">${d.improve}</div>
-      </div>
-      <div class="feedback-section fb-revised">
-        <div class="fb-head">✨ 개선된 질문 예시</div>
-        <div class="fb-body">${d.revised}</div>
-      </div>
-      <div style="margin-top:10px;padding:9px 13px;background:var(--yellow-light);border-radius:8px;font-size:12.5px;color:#7A6000;">
-        💬 ${d.tip}
-      </div>`;
+    document.getElementById('resultContent').innerHTML =
+      '<div class="result-header"><h3>📊 AI 코치 피드백</h3></div>' +
+      '<div class="score-ring"><div class="score-circle" style="background:' + sc + '20;color:' + sc + ';border:3px solid ' + sc + ';">' + d.score + '</div><div class="score-text"><strong>' + em + ' ' + d.gradeLabel + '</strong>레시피 ' + currentRecipe + ' 기준 · ' + d.grade + '등급</div></div>' +
+      extraHtml +
+      '<div class="feedback-section fb-good"><div class="fb-head">✅ 잘된 점</div><div class="fb-body">' + d.good + '</div></div>' +
+      '<div class="feedback-section fb-improve"><div class="fb-head">💡 이렇게 발전시켜봐요</div><div class="fb-body">' + d.improve + '</div></div>' +
+      '<div class="feedback-section fb-revised"><div class="fb-head">✨ 개선된 질문 예시</div><div class="fb-body">' + d.revised + '</div></div>' +
+      '<div style="margin-top:12px;padding:12px 16px;background:var(--yellow-light);border-radius:10px;font-size:16px;color:#7A6000;">💬 ' + d.tip + '</div>';
   }
 
   function renderGenerated(d, topic) {
-    let html = `<div class="result-header"><h3>✨ 생성된 질문들</h3></div>`;
-
+    let html = '<div class="result-header"><h3>✨ 생성된 질문들</h3></div>';
     if (currentRecipe === 1 && d.questions) {
-      html += `<div class="feedback-section fb-generated">
-        <div class="fb-head">🔀 레시피 1 · 5W1H+if 질문 조합</div>
-        <div class="fb-body">${d.questions.map(q => `
-          <div class="question-item">
-            <span class="q-badge" style="background:var(--r1-light);color:var(--r1);">${q.type}</span>
-            <span class="q-text">${q.q}</span>
-          </div>`).join('')}</div>
-      </div>`;
+      html += '<div class="feedback-section fb-generated"><div class="fb-head">🔀 레시피 1 · 5W1H+if 질문 조합</div><div class="fb-body">' + d.questions.map(q => '<div class="question-item"><span class="q-badge" style="background:var(--r1-light);color:var(--r1);">' + q.type + '</span><span class="q-text">' + q.q + '</span></div>').join('') + '</div></div>';
     }
     if (currentRecipe === 2 && d.whyChain) {
-      html += `<div class="feedback-section fb-generated">
-        <div class="fb-head">🔎 레시피 2 · 5-Why 연쇄 질문</div>
-        <div class="fb-body">
-          <div class="question-item">
-            <span class="q-badge" style="background:#EDE9FE;color:#7C3AED;">출발</span>
-            <span class="q-text">${d.startQuestion}</span>
-          </div>
-          ${d.whyChain.map(w => `
-          <div class="question-item">
-            <span class="q-badge" style="background:var(--r2-light);color:var(--r2);">Why${w.step}</span>
-            <span class="q-text">${w.q}</span>
-          </div>`).join('')}
-        </div>
-      </div>
-      <div style="padding:9px 13px;background:var(--yellow-light);border-radius:8px;font-size:12.5px;color:#7A6000;margin-top:7px;">💡 ${d.insight}</div>`;
+      html += '<div class="feedback-section fb-generated"><div class="fb-head">🔎 레시피 2 · 5-Why 연쇄 질문</div><div class="fb-body"><div class="question-item"><span class="q-badge" style="background:#EDE9FE;color:#7C3AED;">출발</span><span class="q-text">' + d.startQuestion + '</span></div>' + d.whyChain.map(w => '<div class="question-item"><span class="q-badge" style="background:var(--r2-light);color:var(--r2);">Why' + w.step + '</span><span class="q-text">' + w.q + '</span></div>').join('') + '</div></div><div style="padding:12px 16px;background:var(--yellow-light);border-radius:10px;font-size:16px;color:#7A6000;margin-top:8px;">💡 ' + d.insight + '</div>';
     }
     if (currentRecipe === 3 && d.questions) {
-      html += `<div class="feedback-section fb-generated">
-        <div class="fb-head">⊞ 레시피 3 · Q-Matrix 질문 조합</div>
-        <div class="fb-body">${d.questions.map(q => `
-          <div class="question-item">
-            <span class="q-badge" style="background:var(--navy);color:white;">${q.row}</span>
-            <span class="q-badge" style="background:var(--grey-light);color:var(--navy-mid);">${q.col}</span>
-            <span class="q-text">${q.q}</span>
-          </div>`).join('')}</div>
-      </div>`;
+      html += '<div class="feedback-section fb-generated"><div class="fb-head">⊞ 레시피 3 · Q-Matrix 질문 조합</div><div class="fb-body">' + d.questions.map(q => '<div class="question-item"><span class="q-badge" style="background:var(--navy);color:white;">' + q.row + '</span><span class="q-badge" style="background:var(--grey-light);color:var(--navy-mid);">' + q.col + '</span><span class="q-text">' + q.q + '</span></div>').join('') + '</div></div>';
     }
     if (currentRecipe === 4 && d.closedExamples) {
-      html += `<div class="feedback-section fb-generated">
-        <div class="fb-head">🔓 레시피 4 · 닫힌 → 열린 질문 전환</div>
-        <div class="fb-body">
-          ${d.closedExamples.map(ex => `
-          <div style="margin-bottom:11px;padding-bottom:11px;border-bottom:1px solid var(--grey-light);">
-            <div style="font-size:11.5px;color:#EF4444;margin-bottom:5px;">🔒 닫힌: ${ex.closed}</div>
-            <div style="font-size:13px;color:#059669;font-weight:500;">🔓 열린: ${ex.open}</div>
-          </div>`).join('')}
-          <div style="padding:9px;background:var(--mint-light);border-radius:7px;font-size:13px;font-weight:700;color:var(--mint);">
-            ⭐ 최고의 열린 질문: ${d.bestQuestion}
-          </div>
-        </div>
-      </div>`;
+      html += '<div class="feedback-section fb-generated"><div class="fb-head">🔓 레시피 4 · 닫힌 → 열린 질문 전환</div><div class="fb-body">' + d.closedExamples.map(ex => '<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--grey-light);"><div style="font-size:15px;color:#EF4444;margin-bottom:6px;">🔒 닫힌: ' + ex.closed + '</div><div style="font-size:16px;color:#059669;font-weight:500;">🔓 열린: ' + ex.open + '</div></div>').join('') + '<div style="padding:12px;background:var(--mint-light);border-radius:10px;font-size:16px;font-weight:700;color:var(--mint);">⭐ 최고의 열린 질문: ' + d.bestQuestion + '</div></div></div>';
     }
-    if (d.tip) {
-      html += `<div style="padding:9px 13px;background:var(--yellow-light);border-radius:8px;font-size:12.5px;color:#7A6000;margin-top:7px;">💡 ${d.tip}</div>`;
-    }
+    if (d.tip) html += '<div style="padding:12px 16px;background:var(--yellow-light);border-radius:10px;font-size:16px;color:#7A6000;margin-top:8px;">💡 ' + d.tip + '</div>';
     document.getElementById('resultContent').innerHTML = html;
   }
 
