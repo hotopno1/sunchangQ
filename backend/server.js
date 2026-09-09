@@ -52,10 +52,32 @@ app.post('/api/coach', async function(req, res) {
   const mode = req.body.mode;
   const question = req.body.question;
   const topic = req.body.topic;
+  const promptText = req.body.promptText;
+  const systemPrompt = req.body.systemPrompt;
 
-  if (!recipe || !mode) {
+  if (!mode) {
     return res.status(400).json({ error: '필수 파라미터가 없습니다.' });
   }
+
+  // 프롬프트 분석 모드
+  if (mode === 'prompt_analyze') {
+    if (!systemPrompt) return res.status(400).json({ error: '프롬프트를 입력해주세요.' });
+    try {
+      var message = await client.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1024,
+        messages: [{ role: 'user', content: systemPrompt }]
+      });
+      var text = message.content.map(function(b) { return b.text || ''; }).join('');
+      var clean = text.replace(/```json|```/g, '').trim();
+      var result = JSON.parse(clean);
+      return res.json({ success: true, result: result });
+    } catch (err) {
+      console.error('프롬프트 분석 오류:', err.message);
+      return res.status(500).json({ error: 'AI 응답 오류: ' + err.message });
+    }
+  }
+
   if (mode === 'feedback' && !question) {
     return res.status(400).json({ error: '질문을 입력해주세요.' });
   }
