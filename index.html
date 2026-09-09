@@ -378,6 +378,10 @@
           <input type="radio" name="mode" value="generate" onchange="switchMode('generate')">
           ✨ 질문 생성하기
         </label>
+        <label id="label-prompt">
+          <input type="radio" name="mode" value="prompt" onchange="switchMode('prompt')">
+          🤖 AI 프롬프트 만들기
+        </label>
       </div>
     </div>
 
@@ -430,6 +434,30 @@
       <div id="generateInputWrap" style="display:none;">
         <label>✨ 위에 주제를 입력하면 AI가 레시피에 맞는 질문을 생성해드려요</label>
       </div>
+      <div id="promptInputWrap" style="display:none;">
+        <label for="promptInput">🤖 AI에게 보내고 싶은 문장을 입력하세요</label>
+        <textarea id="promptInput" placeholder="예: 좋은 책 추천해줘 / 주말에 뭐 할지 알려줘 / 동물은 뭐가 있어?" maxlength="300" oninput="updatePromptChar()"></textarea>
+        <div class="char-count"><span id="promptCharCount">0</span> / 300</div>
+      </div>
+
+      <!-- 3단계 진행 영역 (프롬프트 모드 전용) -->
+      <div id="promptStepsWrap" style="display:none;">
+        <!-- 진행 표시 바 -->
+        <div style="display:flex;gap:0;margin-bottom:24px;border-radius:12px;overflow:hidden;">
+          <div id="stepBar1" style="flex:1;padding:12px;text-align:center;font-size:15px;font-weight:700;background:#EFF6FF;color:#1D4ED8;border-right:2px solid white;">① 명확하게</div>
+          <div id="stepBar2" style="flex:1;padding:12px;text-align:center;font-size:15px;font-weight:700;background:var(--grey-light);color:var(--grey-mid);border-right:2px solid white;">② 구체적으로</div>
+          <div id="stepBar3" style="flex:1;padding:12px;text-align:center;font-size:15px;font-weight:700;background:var(--grey-light);color:var(--grey-mid);">③ 목적 분명히</div>
+        </div>
+
+        <!-- 원본 문장 표시 -->
+        <div style="background:var(--grey-light);border-radius:12px;padding:16px 20px;margin-bottom:20px;">
+          <div style="font-size:14px;font-weight:700;color:var(--navy-mid);margin-bottom:6px;">📝 내 원래 문장</div>
+          <div id="originalPromptDisplay" style="font-size:18px;color:var(--navy);font-weight:500;"></div>
+        </div>
+
+        <!-- 단계별 콘텐츠 -->
+        <div id="stepContent"></div>
+      </div>
       <button class="btn-primary" id="runBtn" onclick="runAI()">
         <span id="btnIcon">🔍</span> <span id="btnText">질문 평가하기</span>
       </button>
@@ -477,19 +505,24 @@
 
   function switchMode(mode) {
     currentMode = mode;
-    const isFeedback = mode === 'feedback';
-    document.getElementById('feedbackInputWrap').style.display = isFeedback ? 'block' : 'none';
-    document.getElementById('generateInputWrap').style.display = isFeedback ? 'none' : 'block';
-    document.getElementById('topicRow').style.display = isFeedback ? 'none' : 'flex';
-    document.getElementById('btnIcon').textContent = isFeedback ? '🔍' : '✨';
-    document.getElementById('btnText').textContent = isFeedback ? '질문 평가하기' : '질문 생성하기';
+    document.getElementById('feedbackInputWrap').style.display = mode === 'feedback' ? 'block' : 'none';
+    document.getElementById('generateInputWrap').style.display = mode === 'generate' ? 'block' : 'none';
+    document.getElementById('promptInputWrap').style.display = mode === 'prompt' ? 'block' : 'none';
+    document.getElementById('topicRow').style.display = mode === 'generate' ? 'flex' : 'none';
+    document.getElementById('btnIcon').textContent = mode === 'feedback' ? '🔍' : mode === 'generate' ? '✨' : '🤖';
+    document.getElementById('btnText').textContent = mode === 'feedback' ? '질문 평가하기' : mode === 'generate' ? '질문 생성하기' : '프롬프트 분석하기';
     document.querySelectorAll('.mode-radio label').forEach(l => l.classList.remove('selected'));
-    document.getElementById(isFeedback ? 'label-feedback' : 'label-generate').classList.add('selected');
+    const labelId = mode === 'feedback' ? 'label-feedback' : mode === 'generate' ? 'label-generate' : 'label-prompt';
+    document.getElementById(labelId).classList.add('selected');
     hideResult();
   }
 
   function updateChar() {
     document.getElementById('charCount').textContent = document.getElementById('questionInput').value.length;
+  }
+
+  function updatePromptChar() {
+    document.getElementById('promptCharCount').textContent = document.getElementById('promptInput').value.length;
   }
 
   function hideResult() {
@@ -535,27 +568,159 @@
     }
   }
 
+  // ── 프롬프트 업그레이드 3단계 ──
+  let promptStepData = {};
+
   async function runAI() {
     const btn = document.getElementById('runBtn');
     const question = document.getElementById('questionInput').value.trim();
     const topic = document.getElementById('topicInput').value.trim();
+    const promptEl = document.getElementById('promptInput');
+    const promptText = promptEl ? promptEl.value.trim() : '';
+
     if (currentMode === 'feedback' && !question) { alert('질문을 먼저 입력해주세요!'); return; }
     if (currentMode === 'generate' && !topic) { alert('주제나 키워드를 입력해주세요!'); return; }
+    if (currentMode === 'prompt' && !promptText) { alert('문장을 먼저 입력해주세요!'); return; }
+
     btn.disabled = true;
-    showLoading();
-    try {
-      const body = { recipe: currentRecipe, mode: currentMode };
-      if (currentMode === 'feedback') body.question = question;
-      else body.topic = topic;
-      const res = await fetch(API_BASE + '/api/coach', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      if (!res.ok) { const err = await res.json(); throw new Error(err.error || '서버 오류'); }
-      const { result } = await res.json();
-      if (currentMode === 'feedback') { renderFeedback(result, question); addHistory(currentRecipe, question, result.score); }
-      else { renderGenerated(result, topic); addHistory(currentRecipe, '[생성] ' + topic, null); }
-    } catch (e) {
-      document.getElementById('resultContent').innerHTML = '<div style="padding:28px;color:#EF4444;text-align:center;font-size:18px;">⚠️ 오류가 발생했습니다.<br><small>' + e.message + '</small></div>';
+
+    if (currentMode === 'prompt') {
+      promptStepData = { original: promptText };
+      document.getElementById('promptInputWrap').style.display = 'none';
+      document.getElementById('promptStepsWrap').style.display = 'block';
+      document.getElementById('originalPromptDisplay').textContent = promptText;
+      btn.style.display = 'none';
+      await runPromptStep(1, promptText);
+    } else {
+      showLoading();
+      try {
+        const body = { recipe: currentRecipe, mode: currentMode };
+        if (currentMode === 'feedback') body.question = question;
+        else body.topic = topic;
+        const res = await fetch(API_BASE + '/api/coach', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        if (!res.ok) { const err = await res.json(); throw new Error(err.error || '서버 오류'); }
+        const { result } = await res.json();
+        if (currentMode === 'feedback') { renderFeedback(result, question); addHistory(currentRecipe, question, result.score); }
+        else { renderGenerated(result, topic); addHistory(currentRecipe, '[생성] ' + topic, null); }
+      } catch (e) {
+        document.getElementById('resultContent').innerHTML = '<div style="padding:28px;color:#EF4444;text-align:center;font-size:18px;">⚠️ 오류가 발생했습니다.<br><small>' + e.message + '</small></div>';
+      }
     }
     btn.disabled = false;
+  }
+
+  async function runPromptStep(step, inputSentence) {
+    const stepContent = document.getElementById('stepContent');
+    updateStepBar(step);
+    stepContent.innerHTML = '<div class="loading-wrap"><div class="spinner"></div><p>AI가 ' + step + '단계를 준비 중이에요…</p></div>';
+
+    const stepPrompts = {
+      1: '당신은 AI 프롬프트 교육 코치입니다. 한국 중학생 대상입니다.\n\n학생의 원래 문장: "' + inputSentence + '"\n\n[1단계: 명확성 높이기]\n이 문장에서 대상/범위/종류가 불분명한 부분을 찾아 명확하게 만든 버전 3개를 제안해주세요.\n\nJSON으로만 응답:\n{"explanation":"명확성이란 대상과 범위를 분명히 하는 것입니다. 예시 1문장","problem":"원래 문장에서 불명확한 점 1문장","options":["명확하게 바꾼 버전1","명확하게 바꾼 버전2","명확하게 바꾼 버전3"]}',
+      2: '당신은 AI 프롬프트 교육 코치입니다. 한국 중학생 대상입니다.\n\n1단계 완성 문장: "' + inputSentence + '"\n\n[2단계: 구체성 높이기]\n이 문장에 숫자, 조건, 형식 등을 추가해 더 구체적으로 만든 버전 3개를 제안해주세요.\n\nJSON으로만 응답:\n{"explanation":"구체성이란 원하는 내용을 세밀하게 표현하는 것입니다. 예시 1문장","problem":"현재 문장에서 더 구체화할 수 있는 점 1문장","options":["구체적으로 바꾼 버전1","구체적으로 바꾼 버전2","구체적으로 바꾼 버전3"]}',
+      3: '당신은 AI 프롬프트 교육 코치입니다. 한국 중학생 대상입니다.\n\n2단계 완성 문장: "' + inputSentence + '"\n\n[3단계: 목적 추가하기]\n이 문장에 왜 필요한지, 어떻게 사용할지 목적을 추가한 버전 3개를 제안해주세요.\n\nJSON으로만 응답:\n{"explanation":"목적을 추가하면 AI가 더 정확한 답을 줄 수 있습니다. 예시 1문장","problem":"현재 문장에 목적이 빠진 이유 1문장","options":["목적 추가한 버전1","목적 추가한 버전2","목적 추가한 버전3"]}'
+    };
+
+    try {
+      const res = await fetch(API_BASE + '/api/coach', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'prompt_analyze', systemPrompt: stepPrompts[step] })
+      });
+      if (!res.ok) throw new Error('서버 오류');
+      const { result } = await res.json();
+      renderStepUI(step, result, inputSentence);
+    } catch (e) {
+      stepContent.innerHTML = '<div style="padding:20px;color:#EF4444;text-align:center;font-size:17px;">⚠️ 오류: ' + e.message + '</div>';
+    }
+  }
+
+  function renderStepUI(step, d, inputSentence) {
+    const colors = { 1: '#1D4ED8', 2: '#7C3AED', 3: '#059669' };
+    const bgs = { 1: '#EFF6FF', 2: '#F5F3FF', 3: '#ECFDF5' };
+    const labels = { 1: '① 명확하게', 2: '② 구체적으로', 3: '③ 목적 분명히' };
+    const c = colors[step], bg = bgs[step];
+
+    const optionsHtml = d.options.map((opt, i) =>
+      '<div onclick="selectStepOption(' + step + ', \'' + opt.replace(/\\/g, '\\\\').replace(/'/g, "\\'") + '\')" ' +
+      'style="cursor:pointer;border:2.5px solid ' + c + '40;border-radius:14px;padding:18px 22px;margin-bottom:12px;font-size:17px;color:var(--navy);line-height:1.7;background:white;transition:all 0.15s;" ' +
+      'onmouseover="this.style.background=\'' + bg + '\';this.style.borderColor=\'' + c + '\'" ' +
+      'onmouseout="this.style.background=\'white\';this.style.borderColor=\'' + c + '40\'">' +
+      '<span style="font-weight:700;color:' + c + ';">선택지 ' + (i + 1) + '</span><br>' + opt + '</div>'
+    ).join('');
+
+    document.getElementById('stepContent').innerHTML =
+      '<div style="background:' + bg + ';border-radius:14px;padding:20px 24px;margin-bottom:20px;">' +
+      '<div style="font-size:20px;font-weight:900;color:' + c + ';margin-bottom:8px;">' + labels[step] + '</div>' +
+      '<div style="font-size:16px;color:var(--navy-mid);margin-bottom:6px;">💡 ' + d.explanation + '</div>' +
+      '<div style="font-size:15px;color:#EF4444;">⚠️ ' + d.problem + '</div></div>' +
+      '<div style="font-size:17px;font-weight:700;color:var(--navy);margin-bottom:14px;">아래 중 마음에 드는 문장을 선택하세요 👇</div>' +
+      optionsHtml;
+  }
+
+  function selectStepOption(step, selected) {
+    promptStepData['step' + step] = selected;
+    if (step < 3) {
+      document.getElementById('stepContent').innerHTML =
+        '<div style="background:#ECFDF5;border-radius:12px;padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">' +
+        '<span style="font-size:24px;">✅</span>' +
+        '<div><div style="font-size:15px;font-weight:700;color:#059669;">' + step + '단계 완료!</div>' +
+        '<div style="font-size:17px;color:var(--navy);margin-top:4px;">' + selected + '</div></div></div>' +
+        '<button onclick="runPromptStep(' + (step+1) + ', \'' + selected.replace(/\\/g, '\\\\').replace(/'/g, "\\'") + '\')" ' +
+        'style="width:100%;padding:18px;background:var(--mint);color:white;border:none;border-radius:12px;font-size:19px;font-weight:700;cursor:pointer;">다음 단계로 →</button>';
+      updateStepBar(step + 1);
+    } else {
+      renderFinalPrompt(selected);
+    }
+  }
+
+  function renderFinalPrompt(final) {
+    updateStepBar(4);
+    document.getElementById('stepContent').innerHTML =
+      '<div style="background:#ECFDF5;border-radius:14px;padding:24px;margin-bottom:16px;">' +
+      '<div style="font-size:22px;font-weight:900;color:#059669;margin-bottom:20px;">🎉 프롬프트 업그레이드 완료!</div>' +
+
+      '<div style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:var(--grey-mid);margin-bottom:6px;">📝 원래 문장</div>' +
+      '<div style="font-size:17px;color:var(--navy-mid);padding:12px 16px;background:var(--grey-light);border-radius:10px;">' + promptStepData.original + '</div></div>' +
+
+      '<div style="text-align:center;font-size:20px;color:var(--grey-mid);margin:8px 0;">↓</div>' +
+
+      '<div style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#1D4ED8;margin-bottom:6px;">① 명확하게</div>' +
+      '<div style="font-size:17px;color:var(--navy);padding:12px 16px;background:#EFF6FF;border-radius:10px;">' + (promptStepData.step1 || '') + '</div></div>' +
+
+      '<div style="text-align:center;font-size:20px;color:var(--grey-mid);margin:8px 0;">↓</div>' +
+
+      '<div style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#7C3AED;margin-bottom:6px;">② 구체적으로</div>' +
+      '<div style="font-size:17px;color:var(--navy);padding:12px 16px;background:#F5F3FF;border-radius:10px;">' + (promptStepData.step2 || '') + '</div></div>' +
+
+      '<div style="text-align:center;font-size:20px;color:var(--grey-mid);margin:8px 0;">↓</div>' +
+
+      '<div style="margin-bottom:20px;"><div style="font-size:13px;font-weight:700;color:#059669;margin-bottom:6px;">③ 목적까지 분명하게 ⭐ 최종 완성!</div>' +
+      '<div style="font-size:19px;font-weight:700;color:#065F46;padding:16px 20px;background:white;border:3px solid #059669;border-radius:12px;">' + final + '</div></div>' +
+
+      '<div style="padding:14px 18px;background:var(--yellow-light);border-radius:12px;font-size:17px;color:#7A6000;">💬 처음보다 훨씬 좋은 프롬프트가 됐어요! AI도 이런 질문을 더 좋아한답니다 😊</div></div>' +
+
+      '<button onclick="resetPromptMode()" style="width:100%;padding:16px;background:var(--navy);color:white;border:none;border-radius:12px;font-size:17px;font-weight:700;cursor:pointer;">🔄 새 문장으로 다시 시작하기</button>';
+  }
+
+  function updateStepBar(activeStep) {
+    const bgs = { 1: '#EFF6FF', 2: '#F5F3FF', 3: '#ECFDF5' };
+    const cols = { 1: '#1D4ED8', 2: '#7C3AED', 3: '#059669' };
+    [1, 2, 3].forEach(i => {
+      const bar = document.getElementById('stepBar' + i);
+      if (!bar) return;
+      if (i < activeStep) { bar.style.background = '#ECFDF5'; bar.style.color = '#059669'; }
+      else if (i === activeStep) { bar.style.background = bgs[i]; bar.style.color = cols[i]; }
+      else { bar.style.background = 'var(--grey-light)'; bar.style.color = 'var(--grey-mid)'; }
+    });
+  }
+
+  function resetPromptMode() {
+    document.getElementById('promptInputWrap').style.display = 'block';
+    document.getElementById('promptStepsWrap').style.display = 'none';
+    document.getElementById('promptInput').value = '';
+    document.getElementById('promptCharCount').textContent = '0';
+    document.getElementById('runBtn').style.display = 'inline-flex';
+    promptStepData = {};
   }
 
   function renderFeedback(d, q) {
