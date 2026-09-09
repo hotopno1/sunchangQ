@@ -14,7 +14,7 @@
     --yellow-light: #FFFBE0;
     --navy: #1A2340;
     --navy-mid: #3B4A6B;
-    --bg: #F4F8F8;
+    --bg: #F0F5F5;
     --white: #FFFFFF;
     --grey-light: #EEF2F2;
     --grey-mid: #C5D0D0;
@@ -23,73 +23,102 @@
     --r2: #7C4DFF; --r2-light: #F3EEFF;
     --r3: #0EA5A0; --r3-light: #E0F5F4;
     --r4: #F59E0B; --r4-light: #FFFBE6;
-    --radius: 16px;
-    --shadow: 0 2px 16px rgba(10,40,60,0.08);
+    --radius: 18px;
+    --shadow: 0 2px 20px rgba(10,40,60,0.09);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
   body {
     font-family: 'Noto Sans KR', sans-serif;
     background: var(--bg);
     color: var(--text-body);
-    min-height: 100vh;
+    font-size: 18px;
     display: flex;
     flex-direction: column;
-    font-size: 17px;
+    min-height: 100vh;
   }
 
   /* HEADER */
   header {
     background: var(--navy);
     color: var(--white);
-    padding: 20px 36px;
+    padding: 22px 40px;
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 18px;
     position: sticky; top: 0; z-index: 100;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.22);
+    flex-shrink: 0;
   }
   .logo-badge {
     background: var(--yellow);
     color: var(--navy);
     font-weight: 900;
-    font-size: 15px;
-    padding: 6px 14px;
-    border-radius: 8px;
+    font-size: 17px;
+    padding: 7px 16px;
+    border-radius: 9px;
+    letter-spacing: -0.3px;
   }
-  header h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
-  header .sub { font-size: 15px; color: var(--mint-mid); margin-left: auto; }
+  header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  header .sub { font-size: 16px; color: var(--mint-mid); margin-left: auto; }
 
-  /* LAYOUT */
+  /* LAYOUT — 화면 꽉 채우기 */
   .app-shell {
     display: flex;
     flex: 1;
-    max-width: 1400px;
-    margin: 0 auto;
     width: 100%;
-    padding: 32px 28px;
+    padding: 28px 32px;
     gap: 28px;
+    min-height: 0;
   }
 
   /* SIDEBAR */
   .sidebar {
-    width: 280px;
+    width: 320px;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
   }
   .sidebar-label {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     color: var(--navy-mid);
-    letter-spacing: 0.6px;
+    letter-spacing: 0.7px;
     text-transform: uppercase;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
   }
+
+  /* 모드 토글 */
+  .mode-toggle {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    box-shadow: var(--shadow);
+  }
+  .mode-radio { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+  .mode-radio label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--navy-mid);
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 2.5px solid transparent;
+    transition: all 0.15s;
+  }
+  .mode-radio label:hover { background: var(--grey-light); }
+  .mode-radio input[type=radio] { accent-color: var(--mint); width: 20px; height: 20px; }
+  .mode-radio label.selected { border-color: var(--mint); background: var(--mint-light); color: var(--navy); font-weight: 700; }
+
+  /* 레시피 버튼 */
   .recipe-btn {
     border: none;
     border-radius: 14px;
-    padding: 18px 20px;
+    padding: 20px 22px;
     cursor: pointer;
     text-align: left;
     background: var(--white);
@@ -97,104 +126,90 @@
     transition: all 0.17s;
     position: relative;
     overflow: hidden;
+    width: 100%;
   }
   .recipe-btn::before {
     content: '';
     position: absolute;
     left: 0; top: 0; bottom: 0;
-    width: 5px;
+    width: 6px;
+    border-radius: 14px 0 0 14px;
   }
   .recipe-btn.r1::before { background: var(--r1); }
   .recipe-btn.r2::before { background: var(--r2); }
   .recipe-btn.r3::before { background: var(--r3); }
   .recipe-btn.r4::before { background: var(--r4); }
-  .recipe-btn .rnum { font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+  .recipe-btn .rnum { font-size: 13px; font-weight: 700; margin-bottom: 5px; }
   .recipe-btn.r1 .rnum { color: var(--r1); }
   .recipe-btn.r2 .rnum { color: var(--r2); }
   .recipe-btn.r3 .rnum { color: var(--r3); }
   .recipe-btn.r4 .rnum { color: var(--r4); }
-  .recipe-btn .rtitle { font-size: 17px; font-weight: 700; color: var(--navy); line-height: 1.3; }
-  .recipe-btn .rdesc { font-size: 13px; color: var(--navy-mid); margin-top: 5px; line-height: 1.5; }
-  .recipe-btn:hover { transform: translateX(3px); box-shadow: 0 4px 18px rgba(10,40,60,0.13); }
+  .recipe-btn .rtitle { font-size: 19px; font-weight: 700; color: var(--navy); line-height: 1.3; }
+  .recipe-btn .rdesc { font-size: 14px; color: var(--navy-mid); margin-top: 5px; line-height: 1.5; }
+  .recipe-btn:hover { transform: translateX(3px); box-shadow: 0 5px 20px rgba(10,40,60,0.14); }
   .recipe-btn.active.r1 { background: var(--r1-light); }
   .recipe-btn.active.r2 { background: var(--r2-light); }
   .recipe-btn.active.r3 { background: var(--r3-light); }
   .recipe-btn.active.r4 { background: var(--r4-light); }
 
-  .mode-toggle {
-    margin-top: 0;
-    background: var(--white);
-    border-radius: 14px;
-    padding: 18px;
-    box-shadow: var(--shadow);
-  }
-  .mode-radio { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-  .mode-radio label {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    color: var(--navy-mid);
-    padding: 10px 14px;
-    border-radius: 10px;
-    border: 2px solid transparent;
-    transition: all 0.14s;
-  }
-  .mode-radio label:hover { background: var(--grey-light); }
-  .mode-radio input[type=radio] { accent-color: var(--mint); width: 18px; height: 18px; }
-  .mode-radio label.selected { border-color: var(--mint); background: var(--mint-light); color: var(--navy); }
-
   /* MAIN */
-  .main-panel { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+  .main-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+  }
 
+  /* 레시피 설명바 */
   .recipe-info-bar {
     border-radius: var(--radius);
-    padding: 20px 24px;
+    padding: 24px 28px;
     background: var(--white);
     box-shadow: var(--shadow);
     display: flex;
     align-items: flex-start;
-    gap: 16px;
-    border-left: 6px solid var(--mint);
+    gap: 18px;
+    border-left: 7px solid var(--mint);
     transition: border-color 0.2s;
   }
-  .recipe-info-bar .emoji { font-size: 34px; flex-shrink: 0; }
-  .recipe-info-bar h2 { font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
-  .recipe-info-bar p { font-size: 15px; color: var(--navy-mid); line-height: 1.7; }
+  .recipe-info-bar .emoji { font-size: 40px; flex-shrink: 0; }
+  .recipe-info-bar h2 { font-size: 23px; font-weight: 700; color: var(--navy); margin-bottom: 7px; }
+  .recipe-info-bar p { font-size: 17px; color: var(--navy-mid); line-height: 1.75; }
   .recipe-info-bar .tip {
-    margin-top: 8px;
-    font-size: 14px;
+    margin-top: 10px;
+    font-size: 15px;
     background: var(--yellow-light);
-    border-radius: 8px;
-    padding: 6px 12px;
+    border-radius: 9px;
+    padding: 7px 14px;
     color: #7A6000;
     display: inline-block;
     line-height: 1.6;
   }
 
+  /* 입력 블록 */
   .input-block {
     background: var(--white);
     border-radius: var(--radius);
-    padding: 26px;
+    padding: 28px 32px;
     box-shadow: var(--shadow);
+    flex: 1;
   }
   .input-block label {
     display: block;
-    font-size: 17px;
+    font-size: 19px;
     font-weight: 700;
     color: var(--navy);
-    margin-bottom: 12px;
+    margin-bottom: 14px;
   }
-  .topic-row { display: flex; gap: 10px; margin-bottom: 14px; }
+  .topic-row { display: flex; gap: 12px; margin-bottom: 16px; }
   .topic-row input {
     flex: 1;
-    border: 2px solid var(--grey-mid);
+    border: 2.5px solid var(--grey-mid);
     border-radius: 12px;
-    padding: 14px 16px;
+    padding: 16px 18px;
     font-family: inherit;
-    font-size: 16px;
+    font-size: 18px;
     outline: none;
     color: var(--navy);
     transition: border-color 0.14s;
@@ -203,46 +218,46 @@
   .topic-row input:focus { border-color: var(--mint); background: var(--white); }
   textarea {
     width: 100%;
-    border: 2px solid var(--grey-mid);
+    border: 2.5px solid var(--grey-mid);
     border-radius: 12px;
-    padding: 16px;
+    padding: 18px 20px;
     font-family: inherit;
-    font-size: 17px;
-    min-height: 130px;
+    font-size: 18px;
+    min-height: 160px;
     resize: vertical;
-    line-height: 1.75;
+    line-height: 1.8;
     outline: none;
     color: var(--navy);
     transition: border-color 0.14s;
     background: #FAFCFC;
   }
   textarea:focus { border-color: var(--mint); background: var(--white); }
-  .char-count { font-size: 13px; color: var(--grey-mid); text-align: right; margin-top: 6px; }
+  .char-count { font-size: 14px; color: var(--grey-mid); text-align: right; margin-top: 7px; }
 
   .btn-primary {
     background: var(--mint);
     color: var(--white);
     border: none;
-    border-radius: 12px;
-    padding: 16px 36px;
+    border-radius: 14px;
+    padding: 18px 44px;
     font-family: inherit;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.17s;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    margin-top: 16px;
+    gap: 10px;
+    margin-top: 18px;
   }
-  .btn-primary:hover { background: #0C9490; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(14,165,160,0.35); }
+  .btn-primary:hover { background: #0C9490; transform: translateY(-2px); box-shadow: 0 8px 22px rgba(14,165,160,0.38); }
   .btn-primary:disabled { background: var(--grey-mid); cursor: not-allowed; transform: none; box-shadow: none; }
 
   /* RESULT */
   .result-area {
     background: var(--white);
     border-radius: var(--radius);
-    padding: 26px;
+    padding: 28px 32px;
     box-shadow: var(--shadow);
     animation: fadeUp 0.28s ease;
     display: none;
@@ -252,86 +267,88 @@
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .result-header { display: flex; align-items: center; margin-bottom: 18px; }
-  .result-header h3 { font-size: 19px; font-weight: 700; color: var(--navy); }
+  .result-header { margin-bottom: 20px; }
+  .result-header h3 { font-size: 22px; font-weight: 700; color: var(--navy); }
 
   .score-ring {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 20px;
     background: var(--grey-light);
-    border-radius: 14px;
-    padding: 14px 20px;
-    margin-bottom: 18px;
+    border-radius: 16px;
+    padding: 18px 24px;
+    margin-bottom: 20px;
   }
   .score-circle {
-    width: 68px; height: 68px;
+    width: 80px; height: 80px;
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-size: 24px; font-weight: 900;
+    font-size: 28px; font-weight: 900;
     flex-shrink: 0;
+    border-width: 4px;
+    border-style: solid;
   }
-  .score-text { font-size: 15px; color: var(--navy-mid); line-height: 1.7; }
-  .score-text strong { font-size: 18px; color: var(--navy); display: block; margin-bottom: 2px; }
+  .score-text { font-size: 17px; color: var(--navy-mid); line-height: 1.7; }
+  .score-text strong { font-size: 21px; color: var(--navy); display: block; margin-bottom: 3px; }
 
-  .feedback-section { margin-bottom: 16px; border-radius: 12px; overflow: hidden; }
-  .fb-head { font-size: 15px; font-weight: 700; padding: 10px 16px; display: flex; align-items: center; gap: 6px; }
-  .fb-body { font-size: 16px; line-height: 1.8; padding: 14px 16px; color: var(--text-body); }
+  .feedback-section { margin-bottom: 16px; border-radius: 14px; overflow: hidden; }
+  .fb-head { font-size: 17px; font-weight: 700; padding: 12px 18px; display: flex; align-items: center; gap: 8px; }
+  .fb-body { font-size: 18px; line-height: 1.85; padding: 16px 18px; color: var(--text-body); }
   .fb-good .fb-head { background: #ECFDF5; color: #065F46; }
   .fb-good .fb-body { background: #F9FFFE; }
   .fb-improve .fb-head { background: #FFF7ED; color: #92400E; }
   .fb-improve .fb-body { background: #FFFBF7; }
   .fb-revised .fb-head { background: var(--mint-light); color: #065050; }
-  .fb-revised .fb-body { background: #F2FFFE; font-weight: 500; }
+  .fb-revised .fb-body { background: #F2FFFE; font-weight: 600; }
   .fb-generated .fb-head { background: var(--r2-light); color: #4A00A0; }
   .fb-generated .fb-body { background: #F8F4FF; }
 
   .question-item {
-    padding: 12px 0;
+    padding: 14px 0;
     border-bottom: 1px solid var(--grey-light);
     display: flex;
-    gap: 12px;
+    gap: 14px;
     align-items: flex-start;
   }
   .question-item:last-child { border-bottom: none; }
   .q-badge {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
-    padding: 3px 10px;
+    padding: 4px 12px;
     border-radius: 20px;
     white-space: nowrap;
     flex-shrink: 0;
     margin-top: 3px;
   }
-  .q-text { font-size: 16px; line-height: 1.7; color: var(--navy); }
+  .q-text { font-size: 18px; line-height: 1.75; color: var(--navy); }
 
   /* LOADING */
-  .loading-wrap { display: flex; flex-direction: column; align-items: center; padding: 40px; gap: 16px; }
+  .loading-wrap { display: flex; flex-direction: column; align-items: center; padding: 48px; gap: 18px; }
   .spinner {
-    width: 44px; height: 44px;
-    border: 4px solid var(--mint-light);
+    width: 50px; height: 50px;
+    border: 5px solid var(--mint-light);
     border-top-color: var(--mint);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-wrap p { font-size: 16px; color: var(--navy-mid); }
+  .loading-wrap p { font-size: 18px; color: var(--navy-mid); }
 
   /* HISTORY */
-  .history-area { background: var(--white); border-radius: var(--radius); padding: 20px 26px; box-shadow: var(--shadow); }
-  .history-area h3 { font-size: 16px; font-weight: 700; color: var(--navy-mid); margin-bottom: 12px; }
+  .history-area { background: var(--white); border-radius: var(--radius); padding: 22px 28px; box-shadow: var(--shadow); }
+  .history-area h3 { font-size: 17px; font-weight: 700; color: var(--navy-mid); margin-bottom: 14px; }
   .history-item {
     border: 2px solid var(--grey-light);
-    border-radius: 10px;
-    padding: 12px 16px;
-    font-size: 14px;
+    border-radius: 11px;
+    padding: 13px 18px;
+    font-size: 15px;
     color: var(--navy-mid);
     cursor: pointer;
     transition: all 0.13s;
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
+    gap: 12px;
+    margin-bottom: 9px;
   }
   .history-item:hover { border-color: var(--mint); color: var(--navy); background: var(--mint-light); }
   .h-recipe { font-weight: 700; }
@@ -347,9 +364,11 @@
 </header>
 
 <div class="app-shell">
+  <!-- 사이드바 -->
   <div class="sidebar">
+    <!-- 모드 선택 (맨 위) -->
     <div class="mode-toggle">
-      <div class="sidebar-label">모드</div>
+      <div class="sidebar-label">모드 선택</div>
       <div class="mode-radio">
         <label class="selected" id="label-feedback">
           <input type="radio" name="mode" value="feedback" checked onchange="switchMode('feedback')">
@@ -362,7 +381,8 @@
       </div>
     </div>
 
-    <div class="sidebar-label" style="margin-top:8px;">레시피 선택</div>
+    <!-- 레시피 선택 -->
+    <div class="sidebar-label" style="margin-top:4px;">레시피 선택</div>
     <button class="recipe-btn r1 active" onclick="selectRecipe(1)">
       <div class="rnum">RECIPE 1</div>
       <div class="rtitle">5W1H 변형하기</div>
@@ -385,7 +405,9 @@
     </button>
   </div>
 
+  <!-- 메인 패널 -->
   <div class="main-panel">
+    <!-- 레시피 설명 -->
     <div class="recipe-info-bar" id="infoBar">
       <div class="emoji" id="infoEmoji">🔀</div>
       <div>
@@ -395,6 +417,7 @@
       </div>
     </div>
 
+    <!-- 입력 영역 -->
     <div class="input-block">
       <div id="topicRow" class="topic-row" style="display:none;">
         <input type="text" id="topicInput" placeholder="주제나 키워드를 입력하세요 (예: 기후변화, 스마트폰 중독…)" maxlength="80">
@@ -412,10 +435,12 @@
       </button>
     </div>
 
+    <!-- 결과 영역 -->
     <div class="result-area" id="resultArea">
       <div id="resultContent"></div>
     </div>
 
+    <!-- 히스토리 -->
     <div class="history-area" id="historyArea" style="display:none;">
       <h3>📋 이번 세션 기록</h3>
       <div id="historyList"></div>
@@ -498,7 +523,7 @@
     const list = document.getElementById('historyList');
     if (!history.length) { area.style.display = 'none'; return; }
     area.style.display = 'block';
-    list.innerHTML = history.map((h, i) => '<div class="history-item" onclick="restoreHistory(' + i + ')"><span class="h-recipe">[R' + h.recipe + ']</span><span class="h-q">' + h.label + '</span><span style="color:' + scoreColor(h.score || 0) + ';font-weight:700;font-size:13px;">' + (h.score ? h.score + '점' : '생성') + '</span><span style="color:var(--grey-mid);font-size:12px;">' + h.time + '</span></div>').join('');
+    list.innerHTML = history.map((h, i) => '<div class="history-item" onclick="restoreHistory(' + i + ')"><span class="h-recipe">[R' + h.recipe + ']</span><span class="h-q">' + h.label + '</span><span style="color:' + scoreColor(h.score || 0) + ';font-weight:700;font-size:14px;">' + (h.score ? h.score + '점' : '생성') + '</span><span style="color:var(--grey-mid);font-size:13px;">' + h.time + '</span></div>').join('');
   }
 
   function restoreHistory(i) {
@@ -528,7 +553,7 @@
       if (currentMode === 'feedback') { renderFeedback(result, question); addHistory(currentRecipe, question, result.score); }
       else { renderGenerated(result, topic); addHistory(currentRecipe, '[생성] ' + topic, null); }
     } catch (e) {
-      document.getElementById('resultContent').innerHTML = '<div style="padding:24px;color:#EF4444;text-align:center;font-size:16px;">⚠️ 오류가 발생했습니다.<br><small>' + e.message + '</small></div>';
+      document.getElementById('resultContent').innerHTML = '<div style="padding:28px;color:#EF4444;text-align:center;font-size:18px;">⚠️ 오류가 발생했습니다.<br><small>' + e.message + '</small></div>';
     }
     btn.disabled = false;
   }
@@ -538,26 +563,26 @@
     const em = scoreEmoji(d.grade);
     let extraHtml = '';
     if (currentRecipe === 2 && d.whyChain) {
-      extraHtml = '<div class="feedback-section fb-improve"><div class="fb-head">🔗 왜? 연쇄 흐름</div><div class="fb-body">' + d.whyChain.map((w, i) => '<div style="margin-bottom:6px;padding-left:' + (i * 16) + 'px;">' + (i > 0 ? '↳ ' : '') + w + '</div>').join('') + '</div></div>';
+      extraHtml = '<div class="feedback-section fb-improve"><div class="fb-head">🔗 왜? 연쇄 흐름</div><div class="fb-body">' + d.whyChain.map((w, i) => '<div style="margin-bottom:7px;padding-left:' + (i * 18) + 'px;">' + (i > 0 ? '↳ ' : '') + w + '</div>').join('') + '</div></div>';
     }
     if (currentRecipe === 3 && d.matrixRow) {
       const lc = d.matrixLevel === '심화' ? '#059669' : d.matrixLevel === '중급' ? '#0EA5A0' : '#F59E0B';
-      extraHtml = '<div style="margin-bottom:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><span style="font-size:15px;font-weight:700;color:var(--navy-mid);">매트릭스 위치:</span><span style="background:var(--navy);color:white;padding:4px 12px;border-radius:20px;font-size:14px;font-weight:700;">' + d.matrixRow + '</span><span style="color:var(--grey-mid);">×</span><span style="background:var(--navy);color:white;padding:4px 12px;border-radius:20px;font-size:14px;font-weight:700;">' + d.matrixCol + '</span><span style="background:' + lc + ';color:white;padding:4px 12px;border-radius:20px;font-size:14px;font-weight:700;">📊 ' + d.matrixLevel + '</span></div>';
+      extraHtml = '<div style="margin-bottom:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;"><span style="font-size:16px;font-weight:700;color:var(--navy-mid);">매트릭스 위치:</span><span style="background:var(--navy);color:white;padding:5px 14px;border-radius:20px;font-size:15px;font-weight:700;">' + d.matrixRow + '</span><span style="color:var(--grey-mid);">×</span><span style="background:var(--navy);color:white;padding:5px 14px;border-radius:20px;font-size:15px;font-weight:700;">' + d.matrixCol + '</span><span style="background:' + lc + ';color:white;padding:5px 14px;border-radius:20px;font-size:15px;font-weight:700;">📊 ' + d.matrixLevel + '</span></div>';
     }
     if (currentRecipe === 4 && d.questionType) {
       const isOpen = d.questionType.includes('잘 열린');
       const isHalf = d.questionType.includes('반쯤');
       const tc = isOpen ? '#059669' : isHalf ? '#F59E0B' : '#EF4444';
-      extraHtml = '<div style="margin-bottom:12px;"><span style="background:' + tc + '20;color:' + tc + ';padding:5px 14px;border-radius:20px;font-size:15px;font-weight:700;border:2px solid ' + tc + '40;">🔓 ' + d.questionType + '</span></div>';
+      extraHtml = '<div style="margin-bottom:14px;"><span style="background:' + tc + '20;color:' + tc + ';padding:6px 16px;border-radius:20px;font-size:16px;font-weight:700;border:2px solid ' + tc + '40;">🔓 ' + d.questionType + '</span></div>';
     }
     document.getElementById('resultContent').innerHTML =
       '<div class="result-header"><h3>📊 AI 코치 피드백</h3></div>' +
-      '<div class="score-ring"><div class="score-circle" style="background:' + sc + '20;color:' + sc + ';border:3px solid ' + sc + ';">' + d.score + '</div><div class="score-text"><strong>' + em + ' ' + d.gradeLabel + '</strong>레시피 ' + currentRecipe + ' 기준 · ' + d.grade + '등급</div></div>' +
+      '<div class="score-ring"><div class="score-circle" style="background:' + sc + '20;color:' + sc + ';border-color:' + sc + ';">' + d.score + '</div><div class="score-text"><strong>' + em + ' ' + d.gradeLabel + '</strong>레시피 ' + currentRecipe + ' 기준 · ' + d.grade + '등급</div></div>' +
       extraHtml +
       '<div class="feedback-section fb-good"><div class="fb-head">✅ 잘된 점</div><div class="fb-body">' + d.good + '</div></div>' +
       '<div class="feedback-section fb-improve"><div class="fb-head">💡 이렇게 발전시켜봐요</div><div class="fb-body">' + d.improve + '</div></div>' +
       '<div class="feedback-section fb-revised"><div class="fb-head">✨ 개선된 질문 예시</div><div class="fb-body">' + d.revised + '</div></div>' +
-      '<div style="margin-top:12px;padding:12px 16px;background:var(--yellow-light);border-radius:10px;font-size:16px;color:#7A6000;">💬 ' + d.tip + '</div>';
+      '<div style="margin-top:14px;padding:14px 18px;background:var(--yellow-light);border-radius:12px;font-size:18px;color:#7A6000;">💬 ' + d.tip + '</div>';
   }
 
   function renderGenerated(d, topic) {
@@ -566,15 +591,15 @@
       html += '<div class="feedback-section fb-generated"><div class="fb-head">🔀 레시피 1 · 5W1H+if 질문 조합</div><div class="fb-body">' + d.questions.map(q => '<div class="question-item"><span class="q-badge" style="background:var(--r1-light);color:var(--r1);">' + q.type + '</span><span class="q-text">' + q.q + '</span></div>').join('') + '</div></div>';
     }
     if (currentRecipe === 2 && d.whyChain) {
-      html += '<div class="feedback-section fb-generated"><div class="fb-head">🔎 레시피 2 · 5-Why 연쇄 질문</div><div class="fb-body"><div class="question-item"><span class="q-badge" style="background:#EDE9FE;color:#7C3AED;">출발</span><span class="q-text">' + d.startQuestion + '</span></div>' + d.whyChain.map(w => '<div class="question-item"><span class="q-badge" style="background:var(--r2-light);color:var(--r2);">Why' + w.step + '</span><span class="q-text">' + w.q + '</span></div>').join('') + '</div></div><div style="padding:12px 16px;background:var(--yellow-light);border-radius:10px;font-size:16px;color:#7A6000;margin-top:8px;">💡 ' + d.insight + '</div>';
+      html += '<div class="feedback-section fb-generated"><div class="fb-head">🔎 레시피 2 · 5-Why 연쇄 질문</div><div class="fb-body"><div class="question-item"><span class="q-badge" style="background:#EDE9FE;color:#7C3AED;">출발</span><span class="q-text">' + d.startQuestion + '</span></div>' + d.whyChain.map(w => '<div class="question-item"><span class="q-badge" style="background:var(--r2-light);color:var(--r2);">Why' + w.step + '</span><span class="q-text">' + w.q + '</span></div>').join('') + '</div></div><div style="padding:14px 18px;background:var(--yellow-light);border-radius:12px;font-size:18px;color:#7A6000;margin-top:10px;">💡 ' + d.insight + '</div>';
     }
     if (currentRecipe === 3 && d.questions) {
       html += '<div class="feedback-section fb-generated"><div class="fb-head">⊞ 레시피 3 · Q-Matrix 질문 조합</div><div class="fb-body">' + d.questions.map(q => '<div class="question-item"><span class="q-badge" style="background:var(--navy);color:white;">' + q.row + '</span><span class="q-badge" style="background:var(--grey-light);color:var(--navy-mid);">' + q.col + '</span><span class="q-text">' + q.q + '</span></div>').join('') + '</div></div>';
     }
     if (currentRecipe === 4 && d.closedExamples) {
-      html += '<div class="feedback-section fb-generated"><div class="fb-head">🔓 레시피 4 · 닫힌 → 열린 질문 전환</div><div class="fb-body">' + d.closedExamples.map(ex => '<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--grey-light);"><div style="font-size:15px;color:#EF4444;margin-bottom:6px;">🔒 닫힌: ' + ex.closed + '</div><div style="font-size:16px;color:#059669;font-weight:500;">🔓 열린: ' + ex.open + '</div></div>').join('') + '<div style="padding:12px;background:var(--mint-light);border-radius:10px;font-size:16px;font-weight:700;color:var(--mint);">⭐ 최고의 열린 질문: ' + d.bestQuestion + '</div></div></div>';
+      html += '<div class="feedback-section fb-generated"><div class="fb-head">🔓 레시피 4 · 닫힌 → 열린 질문 전환</div><div class="fb-body">' + d.closedExamples.map(ex => '<div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--grey-light);"><div style="font-size:16px;color:#EF4444;margin-bottom:7px;">🔒 닫힌: ' + ex.closed + '</div><div style="font-size:18px;color:#059669;font-weight:500;">🔓 열린: ' + ex.open + '</div></div>').join('') + '<div style="padding:14px;background:var(--mint-light);border-radius:12px;font-size:18px;font-weight:700;color:var(--mint);">⭐ 최고의 열린 질문: ' + d.bestQuestion + '</div></div></div>';
     }
-    if (d.tip) html += '<div style="padding:12px 16px;background:var(--yellow-light);border-radius:10px;font-size:16px;color:#7A6000;margin-top:8px;">💡 ' + d.tip + '</div>';
+    if (d.tip) html += '<div style="padding:14px 18px;background:var(--yellow-light);border-radius:12px;font-size:18px;color:#7A6000;margin-top:10px;">💡 ' + d.tip + '</div>';
     document.getElementById('resultContent').innerHTML = html;
   }
 
