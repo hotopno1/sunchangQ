@@ -444,9 +444,9 @@
       <div id="promptStepsWrap" style="display:none;">
         <!-- 진행 표시 바 -->
         <div style="display:flex;gap:0;margin-bottom:24px;border-radius:12px;overflow:hidden;">
-          <div id="stepBar1" style="flex:1;padding:12px;text-align:center;font-size:15px;font-weight:700;background:#EFF6FF;color:#1D4ED8;border-right:2px solid white;">① 명확하게</div>
-          <div id="stepBar2" style="flex:1;padding:12px;text-align:center;font-size:15px;font-weight:700;background:var(--grey-light);color:var(--grey-mid);border-right:2px solid white;">② 구체적으로</div>
-          <div id="stepBar3" style="flex:1;padding:12px;text-align:center;font-size:15px;font-weight:700;background:var(--grey-light);color:var(--grey-mid);">③ 목적 분명히</div>
+          <div id="stepBar1" onclick="goToStep(1)" style="flex:1;padding:12px;text-align:center;font-size:15px;font-weight:700;background:#EFF6FF;color:#1D4ED8;border-right:2px solid white;cursor:pointer;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">① 명확하게</div>
+          <div id="stepBar2" onclick="goToStep(2)" style="flex:1;padding:12px;text-align:center;font-size:15px;font-weight:700;background:var(--grey-light);color:var(--grey-mid);border-right:2px solid white;cursor:pointer;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">② 구체적으로</div>
+          <div id="stepBar3" onclick="goToStep(3)" style="flex:1;padding:12px;text-align:center;font-size:15px;font-weight:700;background:var(--grey-light);color:var(--grey-mid);cursor:pointer;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">③ 목적 분명히</div>
         </div>
 
         <!-- 문장 변화 추적 -->
@@ -754,6 +754,23 @@
       else if (i === activeStep) { bar.style.background = bgs[i]; bar.style.color = cols[i]; }
       else { bar.style.background = 'var(--grey-light)'; bar.style.color = 'var(--grey-mid)'; }
     });
+  }
+
+  function goToStep(targetStep) {
+    // 1단계는 항상 이동 가능
+    // 2단계는 1단계 완료 후 가능
+    // 3단계는 2단계 완료 후 가능
+    if (targetStep === 1) {
+      runPromptStep(1, promptStepData.original);
+    } else if (targetStep === 2 && promptStepData.step1) {
+      runPromptStep(2, promptStepData.step1);
+    } else if (targetStep === 3 && promptStepData.step2) {
+      runPromptStep(3, promptStepData.step2);
+    } else {
+      // 아직 완료 안 된 단계 클릭 시 안내
+      const msg = targetStep === 2 ? '1단계를 먼저 완료해주세요!' : '2단계를 먼저 완료해주세요!';
+      alert(msg);
+    }
   }
 
   function resetPromptMode() {
