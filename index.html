@@ -694,7 +694,6 @@
 
     const optionsHtml = d.options.map((opt, i) => {
       const text = typeof opt === 'object' ? opt.text : opt;
-      // 원본과 비교해서 추가된 부분 자동 감지
       const displayText = findAddedParts(inputSentence, text).replace(/COLOR/g, c);
       const safeText = text.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
       return '<div onclick="selectStepOption(' + step + ', \'' + safeText + '\')" ' +
@@ -704,13 +703,30 @@
         '<span style="font-weight:700;color:' + c + ';font-size:15px;">선택지 ' + (i + 1) + '</span><br>' + displayText + '</div>';
     }).join('');
 
+    // 선택지 4번: 직접 입력
+    const customOption = '<div style="border:2.5px dashed ' + c + '60;border-radius:14px;padding:18px 22px;margin-bottom:12px;background:white;">' +
+      '<div style="font-weight:700;color:' + c + ';font-size:15px;margin-bottom:10px;">선택지 4 ✏️ 내가 직접 쓰기</div>' +
+      '<textarea id="customOptionInput_' + step + '" placeholder="AI 제안이 마음에 안 들면 내 생각대로 직접 써보세요!" ' +
+      'style="width:100%;border:1.5px solid ' + c + '40;border-radius:10px;padding:12px 14px;font-family:inherit;font-size:16px;line-height:1.7;resize:vertical;min-height:80px;outline:none;color:var(--navy);background:#FAFCFC;" ' +
+      'onfocus="this.style.borderColor=\'' + c + '\'" onblur="this.style.borderColor=\'' + c + '40\'"></textarea>' +
+      '<button onclick="selectCustomOption(' + step + ')" ' +
+      'style="margin-top:10px;padding:10px 24px;background:' + c + ';color:white;border:none;border-radius:10px;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;">이 문장으로 선택하기 →</button>' +
+      '</div>';
+
     document.getElementById('stepContent').innerHTML =
       '<div style="background:' + bg + ';border-radius:14px;padding:20px 24px;margin-bottom:20px;">' +
       '<div style="font-size:20px;font-weight:900;color:' + c + ';margin-bottom:8px;">' + labels[step] + '</div>' +
       '<div style="font-size:16px;color:var(--navy-mid);margin-bottom:6px;">💡 ' + d.explanation + '</div>' +
       '<div style="font-size:15px;color:#EF4444;">⚠️ ' + d.problem + '</div></div>' +
       '<div style="font-size:17px;font-weight:700;color:var(--navy);margin-bottom:14px;">아래 중 마음에 드는 문장을 선택하세요 👇</div>' +
-      optionsHtml;
+      optionsHtml + customOption;
+  }
+
+  function selectCustomOption(step) {
+    const input = document.getElementById('customOptionInput_' + step);
+    const val = input ? input.value.trim() : '';
+    if (!val) { alert('문장을 직접 입력해주세요!'); return; }
+    selectStepOption(step, val);
   }
 
   function selectStepOption(step, selected) {
