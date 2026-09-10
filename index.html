@@ -638,9 +638,9 @@
     stepContent.innerHTML = '<div class="loading-wrap"><div class="spinner"></div><p>AI가 ' + step + '단계를 준비 중이에요…</p></div>';
 
     const stepPrompts = {
-      1: '당신은 AI 프롬프트 교육 코치입니다. 한국 중학생 대상입니다.\n\n학생의 원래 문장: "' + inputSentence + '"\n\n[1단계: 명확성 높이기]\n이 문장에서 대상/범위/종류가 불분명한 부분을 찾아 명확하게 만든 버전 3개를 제안해주세요.\n\nJSON으로만 응답:\n{"explanation":"명확성이란 대상과 범위를 분명히 하는 것입니다. 예시 1문장","problem":"원래 문장에서 불명확한 점 1문장","options":["명확하게 바꾼 버전1","명확하게 바꾼 버전2","명확하게 바꾼 버전3"]}',
-      2: '당신은 AI 프롬프트 교육 코치입니다. 한국 중학생 대상입니다.\n\n1단계 완성 문장: "' + inputSentence + '"\n\n[2단계: 구체성 높이기]\n이 문장에 숫자, 조건, 형식 등을 추가해 더 구체적으로 만든 버전 3개를 제안해주세요.\n\nJSON으로만 응답:\n{"explanation":"구체성이란 원하는 내용을 세밀하게 표현하는 것입니다. 예시 1문장","problem":"현재 문장에서 더 구체화할 수 있는 점 1문장","options":["구체적으로 바꾼 버전1","구체적으로 바꾼 버전2","구체적으로 바꾼 버전3"]}',
-      3: '당신은 AI 프롬프트 교육 코치입니다. 한국 중학생 대상입니다.\n\n2단계 완성 문장: "' + inputSentence + '"\n\n[3단계: 목적 추가하기]\n이 문장에 왜 필요한지, 어떻게 사용할지 목적을 추가한 버전 3개를 제안해주세요.\n\nJSON으로만 응답:\n{"explanation":"목적을 추가하면 AI가 더 정확한 답을 줄 수 있습니다. 예시 1문장","problem":"현재 문장에 목적이 빠진 이유 1문장","options":["목적 추가한 버전1","목적 추가한 버전2","목적 추가한 버전3"]}'
+      1: '당신은 AI 프롬프트 교육 코치입니다. 한국 중학생 대상입니다.\n\n학생의 원래 문장: "' + inputSentence + '"\n\n[1단계: 명확성 높이기]\n이 문장에서 대상/범위/종류가 불분명한 부분을 명확하게 만든 버전 3개를 제안하세요. 각 버전에서 명확성을 높인 핵심 구절도 알려주세요.\n\nJSON으로만 응답:\n{"explanation":"명확성이란 대상과 범위를 분명히 하는 것입니다. 예시 1문장","problem":"원래 문장에서 불명확한 점 1문장","options":[{"text":"명확하게 바꾼 버전1","highlight":"이 버전에서 명확성을 높인 핵심 구절"},{"text":"명확하게 바꾼 버전2","highlight":"이 버전에서 명확성을 높인 핵심 구절"},{"text":"명확하게 바꾼 버전3","highlight":"이 버전에서 명확성을 높인 핵심 구절"}]}',
+      2: '당신은 AI 프롬프트 교육 코치입니다. 한국 중학생 대상입니다.\n\n1단계 완성 문장: "' + inputSentence + '"\n\n[2단계: 구체성 높이기]\n이 문장에 숫자, 조건, 형식 등을 추가해 더 구체적으로 만든 버전 3개를 제안하세요. 각 버전에서 구체성을 높인 핵심 구절도 알려주세요.\n\nJSON으로만 응답:\n{"explanation":"구체성이란 원하는 내용을 세밀하게 표현하는 것입니다. 예시 1문장","problem":"현재 문장에서 더 구체화할 수 있는 점 1문장","options":[{"text":"구체적으로 바꾼 버전1","highlight":"이 버전에서 구체성을 높인 핵심 구절"},{"text":"구체적으로 바꾼 버전2","highlight":"이 버전에서 구체성을 높인 핵심 구절"},{"text":"구체적으로 바꾼 버전3","highlight":"이 버전에서 구체성을 높인 핵심 구절"}]}',
+      3: '당신은 AI 프롬프트 교육 코치입니다. 한국 중학생 대상입니다.\n\n2단계 완성 문장: "' + inputSentence + '"\n\n[3단계: 목적 추가하기]\n이 문장에 왜 필요한지, 어떻게 사용할지 목적을 추가한 버전 3개를 제안하세요. 각 버전에서 목적을 나타내는 핵심 구절도 알려주세요.\n\nJSON으로만 응답:\n{"explanation":"목적을 추가하면 AI가 더 정확한 답을 줄 수 있습니다. 예시 1문장","problem":"현재 문장에 목적이 빠진 이유 1문장","options":[{"text":"목적 추가한 버전1","highlight":"이 버전에서 목적을 나타내는 핵심 구절"},{"text":"목적 추가한 버전2","highlight":"이 버전에서 목적을 나타내는 핵심 구절"},{"text":"목적 추가한 버전3","highlight":"이 버전에서 목적을 나타내는 핵심 구절"}]}'
     };
 
     try {
@@ -657,19 +657,29 @@
     }
   }
 
+  function highlightText(fullText, keyword, color) {
+    if (!keyword || !fullText.includes(keyword)) return fullText;
+    return fullText.replace(keyword, '<span style="text-decoration:underline;text-decoration-color:' + color + ';text-decoration-thickness:3px;font-weight:700;color:' + color + ';">' + keyword + '</span>');
+  }
+
   function renderStepUI(step, d, inputSentence) {
     const colors = { 1: '#1D4ED8', 2: '#7C3AED', 3: '#059669' };
     const bgs = { 1: '#EFF6FF', 2: '#F5F3FF', 3: '#ECFDF5' };
     const labels = { 1: '① 명확하게', 2: '② 구체적으로', 3: '③ 목적 분명히' };
     const c = colors[step], bg = bgs[step];
 
-    const optionsHtml = d.options.map((opt, i) =>
-      '<div onclick="selectStepOption(' + step + ', \'' + opt.replace(/\\/g, '\\\\').replace(/'/g, "\\'") + '\')" ' +
-      'style="cursor:pointer;border:2.5px solid ' + c + '40;border-radius:14px;padding:18px 22px;margin-bottom:12px;font-size:17px;color:var(--navy);line-height:1.7;background:white;transition:all 0.15s;" ' +
-      'onmouseover="this.style.background=\'' + bg + '\';this.style.borderColor=\'' + c + '\'" ' +
-      'onmouseout="this.style.background=\'white\';this.style.borderColor=\'' + c + '40\'">' +
-      '<span style="font-weight:700;color:' + c + ';">선택지 ' + (i + 1) + '</span><br>' + opt + '</div>'
-    ).join('');
+    // options가 객체 배열인지 문자열 배열인지 처리
+    const optionsHtml = d.options.map((opt, i) => {
+      const text = typeof opt === 'object' ? opt.text : opt;
+      const highlight = typeof opt === 'object' ? opt.highlight : null;
+      const displayText = highlight ? highlightText(text, highlight, c) : text;
+      const safeText = text.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+      return '<div onclick="selectStepOption(' + step + ', \'' + safeText + '\')" ' +
+        'style="cursor:pointer;border:2.5px solid ' + c + '40;border-radius:14px;padding:18px 22px;margin-bottom:12px;font-size:17px;color:var(--navy);line-height:1.8;background:white;transition:all 0.15s;" ' +
+        'onmouseover="this.style.background=\'' + bg + '\';this.style.borderColor=\'' + c + '\'" ' +
+        'onmouseout="this.style.background=\'white\';this.style.borderColor=\'' + c + '40\'">' +
+        '<span style="font-weight:700;color:' + c + ';font-size:15px;">선택지 ' + (i + 1) + '</span><br>' + displayText + '</div>';
+    }).join('');
 
     document.getElementById('stepContent').innerHTML =
       '<div style="background:' + bg + ';border-radius:14px;padding:20px 24px;margin-bottom:20px;">' +
