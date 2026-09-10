@@ -651,6 +651,7 @@
       });
       if (!res.ok) throw new Error('서버 오류');
       const { result } = await res.json();
+      console.log('Step ' + step + ' result:', JSON.stringify(result));
       renderStepUI(step, result, inputSentence);
     } catch (e) {
       stepContent.innerHTML = '<div style="padding:20px;color:#EF4444;text-align:center;font-size:17px;">⚠️ 오류: ' + e.message + '</div>';
@@ -659,7 +660,9 @@
 
   function highlightText(fullText, keyword, color) {
     if (!keyword || !fullText.includes(keyword)) return fullText;
-    return fullText.replace(keyword, '<span style="text-decoration:underline;text-decoration-color:' + color + ';text-decoration-thickness:3px;font-weight:700;color:' + color + ';">' + keyword + '</span>');
+    const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return fullText.replace(new RegExp(escaped), 
+      '<span style="border-bottom:3px solid ' + color + ';font-weight:700;color:' + color + ';padding-bottom:1px;">' + keyword + '</span>');
   }
 
   function renderStepUI(step, d, inputSentence) {
