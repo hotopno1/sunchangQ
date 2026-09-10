@@ -996,7 +996,7 @@
   async function loadSideRanking() {
     document.getElementById('sideRankingList').innerHTML = '<div style="text-align:center;padding:20px;color:var(--grey-mid);font-size:13px;">불러오는 중...</div>';
     try {
-      const res = await fetch(SHEET_API);
+      const res = await fetch(API_BASE + '/api/ranking?sheetUrl=' + encodeURIComponent(SHEET_API));
       const json = await res.json();
       sideRankData = json.data || [];
       renderSideRanking();
@@ -1071,18 +1071,15 @@
   let rankFilter = 'all';
 
   async function saveToRanking(question, score, grade, recipe) {
-    if (SHEET_API === '여기에-Apps-Script-URL-입력') {
-      alert('⚠️ Apps Script URL을 먼저 설정해주세요!');
-      return;
-    }
     try {
-      await fetch(SHEET_API, {
+      const res = await fetch(API_BASE + '/api/ranking', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question, score, grade, recipe }),
-        mode: 'no-cors'
+        body: JSON.stringify({ question, score, grade, recipe, sheetUrl: SHEET_API })
       });
+      if (!res.ok) throw new Error('서버 오류');
       alert('🎉 랭킹 보드에 등록됐어요!');
+      loadSideRanking();
     } catch (e) {
       alert('오류가 발생했어요: ' + e.message);
     }
