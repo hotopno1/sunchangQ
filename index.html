@@ -535,6 +535,8 @@
     document.querySelectorAll('.mode-radio label').forEach(l => l.classList.remove('selected'));
     const labelId = mode === 'feedback' ? 'label-feedback' : mode === 'generate' ? 'label-generate' : 'label-prompt';
     document.getElementById(labelId).classList.add('selected');
+    document.getElementById('infoBar').style.display = mode === 'prompt' ? 'none' : 'flex';
+    document.getElementById('runBtn').style.display = 'inline-flex';
     hideResult();
   }
 
