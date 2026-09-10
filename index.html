@@ -61,6 +61,22 @@
   }
   header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
   header .sub { font-size: 16px; color: var(--mint-mid); margin-left: auto; }
+  .ranking-btn {
+    background: var(--yellow);
+    color: var(--navy);
+    border: none;
+    border-radius: 10px;
+    padding: 8px 18px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s;
+  }
+  .ranking-btn:hover { background: #FFE033; transform: translateY(-1px); }
 
   /* LAYOUT — 화면 꽉 채우기 */
   .app-shell {
@@ -361,6 +377,7 @@
   <span class="logo-badge">질문 레시피</span>
   <h1>AI 질문 코치</h1>
   <span class="sub">좋은 질문이 좋은 배움을 만듭니다 ✨</span>
+  <button class="ranking-btn" onclick="openRanking()">🏆 랭킹 보드</button>
 </header>
 
 <div class="app-shell">
@@ -407,6 +424,41 @@
       <div class="rtitle">열린 질문 만들기</div>
       <div class="rdesc">닫힌 → 열린 질문으로 전환</div>
     </button>
+
+    <!-- 사이드바 랭킹보드 -->
+    <div style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-top:4px;">
+      <div style="background:var(--navy);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;">
+        <div style="color:white;font-size:15px;font-weight:700;">🏆 질문 랭킹</div>
+        <button onclick="loadSideRanking()" style="background:var(--yellow);color:var(--navy);border:none;border-radius:7px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;">↻ 새로고침</button>
+      </div>
+      <!-- 필터 -->
+      <div style="display:flex;gap:0;border-bottom:1px solid var(--grey-light);">
+        <button onclick="sideFilterBy('all')" id="sf-all" style="flex:1;padding:8px 4px;font-size:11px;font-weight:700;border:none;background:var(--mint);color:white;cursor:pointer;">전체</button>
+        <button onclick="sideFilterBy(1)" id="sf-1" style="flex:1;padding:8px 4px;font-size:11px;font-weight:600;border:none;background:var(--grey-light);color:var(--navy-mid);cursor:pointer;border-left:1px solid var(--grey-mid);">R1</button>
+        <button onclick="sideFilterBy(2)" id="sf-2" style="flex:1;padding:8px 4px;font-size:11px;font-weight:600;border:none;background:var(--grey-light);color:var(--navy-mid);cursor:pointer;border-left:1px solid var(--grey-mid);">R2</button>
+        <button onclick="sideFilterBy(3)" id="sf-3" style="flex:1;padding:8px 4px;font-size:11px;font-weight:600;border:none;background:var(--grey-light);color:var(--navy-mid);cursor:pointer;border-left:1px solid var(--grey-mid);">R3</button>
+        <button onclick="sideFilterBy(4)" id="sf-4" style="flex:1;padding:8px 4px;font-size:11px;font-weight:600;border:none;background:var(--grey-light);color:var(--navy-mid);cursor:pointer;border-left:1px solid var(--grey-mid);">R4</button>
+      </div>
+      <!-- 통계 -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-bottom:1px solid var(--grey-light);">
+        <div style="padding:10px 8px;text-align:center;border-right:1px solid var(--grey-light);">
+          <div style="font-size:10px;color:var(--navy-mid);">참여</div>
+          <div style="font-size:16px;font-weight:700;color:var(--navy);" id="sr-count">-</div>
+        </div>
+        <div style="padding:10px 8px;text-align:center;border-right:1px solid var(--grey-light);">
+          <div style="font-size:10px;color:var(--navy-mid);">평균</div>
+          <div style="font-size:16px;font-weight:700;color:var(--mint);" id="sr-avg">-</div>
+        </div>
+        <div style="padding:10px 8px;text-align:center;">
+          <div style="font-size:10px;color:var(--navy-mid);">최고</div>
+          <div style="font-size:16px;font-weight:700;color:#059669;" id="sr-max">-</div>
+        </div>
+      </div>
+      <!-- 랭킹 리스트 -->
+      <div id="sideRankingList" style="max-height:320px;overflow-y:auto;padding:10px 12px;">
+        <div style="text-align:center;padding:20px;color:var(--grey-mid);font-size:13px;">불러오는 중...</div>
+      </div>
+    </div>
   </div>
 
   <!-- 메인 패널 -->
@@ -497,8 +549,46 @@
   </div>
 </div>
 
+<!-- 랭킹보드 모달 -->
+<div id="rankingModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:999;overflow-y:auto;">
+  <div style="max-width:720px;margin:40px auto;background:var(--white,#fff);border-radius:20px;padding:32px;position:relative;">
+    <button onclick="closeRanking()" style="position:absolute;top:20px;right:20px;border:none;background:var(--grey-light,#eee);border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+    <div style="font-size:22px;font-weight:700;color:var(--navy,#1A2340);margin-bottom:6px;">🏆 질문 랭킹 보드</div>
+    <div style="font-size:14px;color:var(--navy-mid,#3B4A6B);margin-bottom:20px;">우리 반 최고의 질문을 확인해보세요!</div>
+
+    <!-- 필터 -->
+    <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+      <button onclick="rankFilterBy('all')" id="rbtn-all" style="font-size:13px;padding:7px 16px;border-radius:20px;border:2px solid var(--mint,#0EA5A0);background:var(--mint,#0EA5A0);color:white;cursor:pointer;font-weight:700;">전체</button>
+      <button onclick="rankFilterBy(1)" id="rbtn-1" style="font-size:13px;padding:7px 16px;border-radius:20px;border:2px solid #FF7043;background:white;color:#FF7043;cursor:pointer;font-weight:600;">R1 만약에(if)</button>
+      <button onclick="rankFilterBy(2)" id="rbtn-2" style="font-size:13px;padding:7px 16px;border-radius:20px;border:2px solid #7C4DFF;background:white;color:#7C4DFF;cursor:pointer;font-weight:600;">R2 5-Why</button>
+      <button onclick="rankFilterBy(3)" id="rbtn-3" style="font-size:13px;padding:7px 16px;border-radius:20px;border:2px solid #0EA5A0;background:white;color:#0EA5A0;cursor:pointer;font-weight:600;">R3 Q-Matrix</button>
+      <button onclick="rankFilterBy(4)" id="rbtn-4" style="font-size:13px;padding:7px 16px;border-radius:20px;border:2px solid #F59E0B;background:white;color:#F59E0B;cursor:pointer;font-weight:600;">R4 열린질문</button>
+    </div>
+
+    <!-- 통계 -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;">
+      <div style="background:#F4F8F8;border-radius:12px;padding:14px;text-align:center;">
+        <div style="font-size:12px;color:var(--navy-mid,#3B4A6B);margin-bottom:4px;">참여 질문</div>
+        <div style="font-size:22px;font-weight:700;color:var(--navy,#1A2340);" id="rstat-count">-</div>
+      </div>
+      <div style="background:#F4F8F8;border-radius:12px;padding:14px;text-align:center;">
+        <div style="font-size:12px;color:var(--navy-mid,#3B4A6B);margin-bottom:4px;">평균 점수</div>
+        <div style="font-size:22px;font-weight:700;color:var(--mint,#0EA5A0);" id="rstat-avg">-</div>
+      </div>
+      <div style="background:#F4F8F8;border-radius:12px;padding:14px;text-align:center;">
+        <div style="font-size:12px;color:var(--navy-mid,#3B4A6B);margin-bottom:4px;">최고 점수</div>
+        <div style="font-size:22px;font-weight:700;color:#059669;" id="rstat-max">-</div>
+      </div>
+    </div>
+
+    <!-- 랭킹 리스트 -->
+    <div id="rankingList"></div>
+  </div>
+</div>
+
 <script>
   const API_BASE = 'https://sunchangq-production.up.railway.app';
+  const SHEET_API = 'https://script.google.com/macros/s/AKfycby6SIn1Lccf6JpzN63ql4PscvFO79EkVV5zhqhV36oyg-1wcW2EGPcWL8SJ_2elKFrZIg/exec';
 
   const RECIPES = {
     1: { emoji: '🔀', color: 'var(--r1)', title: '레시피 1 · 5W1H 변형하기', desc: 'who / when / where / what / why / how 중 하나를 골라, <strong>"만약에(if)"</strong>를 추가해 상상력 질문으로 바꾸는 기법입니다.', tip: '💡 예: "이순신 장군은 누구인가요?" → "만약 이순신 장군에게 거북선이 없었다면 전쟁은 어떻게 달라졌을까요?"' },
@@ -877,7 +967,8 @@
       '<div class="feedback-section fb-good"><div class="fb-head">✅ 잘된 점</div><div class="fb-body">' + d.good + '</div></div>' +
       '<div class="feedback-section fb-improve"><div class="fb-head">💡 이렇게 발전시켜봐요</div><div class="fb-body">' + d.improve + '</div></div>' +
       '<div class="feedback-section fb-revised"><div class="fb-head">✨ 개선된 질문 예시</div><div class="fb-body">' + d.revised + '</div></div>' +
-      '<div style="margin-top:14px;padding:14px 18px;background:var(--yellow-light);border-radius:12px;font-size:18px;color:#7A6000;">💬 ' + d.tip + '</div>';
+      '<div style="margin-top:14px;padding:14px 18px;background:var(--yellow-light);border-radius:12px;font-size:18px;color:#7A6000;">💬 ' + d.tip + '</div>' +
+      '<button onclick="saveToRanking(\'' + q.replace(/'/g,"\\'") + '\',' + d.score + ',\'' + d.grade + '\',' + currentRecipe + ')" style="margin-top:14px;width:100%;padding:14px;background:var(--navy);color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;">🏆 랭킹 보드에 등록하기</button>';
   }
 
   function renderGenerated(d, topic) {
@@ -898,7 +989,186 @@
     document.getElementById('resultContent').innerHTML = html;
   }
 
-  selectRecipe(1);
+  // ── 사이드바 랭킹 ────────────────────────────────
+  let sideRankData = [];
+  let sideFilter = 'all';
+
+  async function loadSideRanking() {
+    document.getElementById('sideRankingList').innerHTML = '<div style="text-align:center;padding:20px;color:var(--grey-mid);font-size:13px;">불러오는 중...</div>';
+    try {
+      const res = await fetch(SHEET_API);
+      const json = await res.json();
+      sideRankData = json.data || [];
+      renderSideRanking();
+    } catch (e) {
+      document.getElementById('sideRankingList').innerHTML = '<div style="text-align:center;padding:16px;color:#EF4444;font-size:12px;">불러오기 실패 😢</div>';
+    }
+  }
+
+  function sideFilterBy(r) {
+    sideFilter = r;
+    const RC = { 1:'#FF7043', 2:'#7C4DFF', 3:'#0EA5A0', 4:'#F59E0B' };
+    ['all',1,2,3,4].forEach(id => {
+      const btn = document.getElementById('sf-' + id);
+      if (!btn) return;
+      if (id === r) {
+        btn.style.background = id === 'all' ? 'var(--mint)' : RC[id];
+        btn.style.color = 'white';
+      } else {
+        btn.style.background = 'var(--grey-light)';
+        btn.style.color = 'var(--navy-mid)';
+      }
+    });
+    renderSideRanking();
+  }
+
+  function renderSideRanking() {
+    const filtered = sideFilter === 'all' ? sideRankData : sideRankData.filter(d => Number(d.recipe) === sideFilter);
+    const sorted = [...filtered].sort((a, b) => Number(b.score) - Number(a.score));
+
+    if (filtered.length) {
+      const avg = Math.round(filtered.reduce((s,d) => s + Number(d.score), 0) / filtered.length);
+      const max = Math.max(...filtered.map(d => Number(d.score)));
+      document.getElementById('sr-count').textContent = filtered.length + '개';
+      document.getElementById('sr-avg').textContent = avg + '점';
+      document.getElementById('sr-max').textContent = max + '점';
+    } else {
+      document.getElementById('sr-count').textContent = '0개';
+      document.getElementById('sr-avg').textContent = '-';
+      document.getElementById('sr-max').textContent = '-';
+    }
+
+    const MEDAL = ['🥇','🥈','🥉'];
+    const RC = { 1:'#FF7043', 2:'#7C4DFF', 3:'#0EA5A0', 4:'#F59E0B' };
+    const RL = { 1:'R1', 2:'R2', 3:'R3', 4:'R4' };
+
+    if (!sorted.length) {
+      document.getElementById('sideRankingList').innerHTML = '<div style="text-align:center;padding:20px;color:var(--grey-mid);font-size:13px;">아직 등록된 질문이 없어요!</div>';
+      return;
+    }
+
+    document.getElementById('sideRankingList').innerHTML = sorted.map((d, i) => {
+      const sc = Number(d.score);
+      const scoreColor = sc>=85?'#059669':sc>=70?'var(--mint)':sc>=55?'#F59E0B':'#EF4444';
+      const rc = RC[d.recipe] || '#888';
+      return `<div style="padding:10px 0;border-bottom:1px solid var(--grey-light);display:flex;align-items:center;gap:8px;">
+        <div style="font-size:${i<3?'18px':'13px'};min-width:26px;text-align:center;font-weight:700;color:var(--navy);">${i<3?MEDAL[i]:(i+1)}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;">
+            <span style="font-size:10px;padding:1px 6px;border-radius:10px;background:${rc}20;color:${rc};font-weight:700;">${RL[d.recipe]||'R'+d.recipe}</span>
+            <span style="font-size:10px;color:var(--grey-mid);">${d.grade}등급</span>
+          </div>
+          <div style="font-size:12px;color:var(--navy-mid);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${d.question}</div>
+        </div>
+        <div style="font-size:17px;font-weight:900;color:${scoreColor};min-width:36px;text-align:right;">${sc}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // 페이지 로드시 자동으로 랭킹 불러오기
+  loadSideRanking();
+  let rankData = [];
+  let rankFilter = 'all';
+
+  async function saveToRanking(question, score, grade, recipe) {
+    if (SHEET_API === '여기에-Apps-Script-URL-입력') {
+      alert('⚠️ Apps Script URL을 먼저 설정해주세요!');
+      return;
+    }
+    try {
+      await fetch(SHEET_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question, score, grade, recipe }),
+        mode: 'no-cors'
+      });
+      alert('🎉 랭킹 보드에 등록됐어요!');
+    } catch (e) {
+      alert('오류가 발생했어요: ' + e.message);
+    }
+  }
+
+  async function openRanking() {
+    document.getElementById('rankingModal').style.display = 'block';
+    document.getElementById('rankingList').innerHTML = '<div style="text-align:center;padding:30px;color:var(--navy-mid);">불러오는 중...</div>';
+    if (SHEET_API === '여기에-Apps-Script-URL-입력') {
+      document.getElementById('rankingList').innerHTML = '<div style="text-align:center;padding:30px;color:#EF4444;">⚠️ Apps Script URL을 설정해주세요!</div>';
+      return;
+    }
+    try {
+      const res = await fetch(SHEET_API);
+      const json = await res.json();
+      rankData = json.data || [];
+      renderRanking();
+    } catch (e) {
+      document.getElementById('rankingList').innerHTML = '<div style="text-align:center;padding:30px;color:#EF4444;">데이터를 불러오지 못했어요 😢</div>';
+    }
+  }
+
+  function closeRanking() {
+    document.getElementById('rankingModal').style.display = 'none';
+  }
+
+  function rankFilterBy(r) {
+    rankFilter = r;
+    const colors = { 1:'#FF7043', 2:'#7C4DFF', 3:'#0EA5A0', 4:'#F59E0B' };
+    ['all',1,2,3,4].forEach(id => {
+      const btn = document.getElementById('rbtn-' + id);
+      if (!btn) return;
+      if (id === r) {
+        btn.style.background = id === 'all' ? 'var(--mint)' : colors[id];
+        btn.style.color = 'white';
+      } else {
+        btn.style.background = 'white';
+        btn.style.color = id === 'all' ? 'var(--mint)' : colors[id];
+      }
+    });
+    renderRanking();
+  }
+
+  function renderRanking() {
+    const filtered = rankFilter === 'all' ? rankData : rankData.filter(d => Number(d.recipe) === rankFilter);
+    const sorted = [...filtered].sort((a, b) => b.score - a.score);
+
+    if (filtered.length) {
+      const avg = Math.round(filtered.reduce((s,d) => s + Number(d.score), 0) / filtered.length);
+      const max = Math.max(...filtered.map(d => Number(d.score)));
+      document.getElementById('rstat-count').textContent = filtered.length + '개';
+      document.getElementById('rstat-avg').textContent = avg + '점';
+      document.getElementById('rstat-max').textContent = max + '점';
+    }
+
+    const MEDAL = ['🥇','🥈','🥉'];
+    const RC = { 1:'#FF7043', 2:'#7C4DFF', 3:'#0EA5A0', 4:'#F59E0B' };
+    const RL = { 1:'R1 만약에(if)', 2:'R2 5-Why', 3:'R3 Q-Matrix', 4:'R4 열린질문' };
+    const GB = { A:'#ECFDF5', B:'#EFF6FF', C:'#FFFBEB', D:'#FEF2F2' };
+    const GT = { A:'#059669', B:'#1D4ED8', C:'#D97706', D:'#EF4444' };
+
+    if (!sorted.length) {
+      document.getElementById('rankingList').innerHTML = '<div style="text-align:center;padding:30px;color:var(--grey-mid);">아직 등록된 질문이 없어요!</div>';
+      return;
+    }
+
+    document.getElementById('rankingList').innerHTML = sorted.map((d, i) => {
+      const rc = RC[d.recipe] || '#888';
+      const sc = Number(d.score);
+      const scoreColor = sc>=85?'#059669':sc>=70?'#0EA5A0':sc>=55?'#F59E0B':'#EF4444';
+      return `<div style="background:#F4F8F8;border-radius:14px;padding:16px 18px;margin-bottom:10px;display:flex;align-items:center;gap:14px;">
+        <div style="font-size:${i<3?'24px':'16px'};font-weight:700;min-width:40px;text-align:center;color:#1A2340;">${i<3?MEDAL[i]:(i+1)+'위'}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:7px;flex-wrap:wrap;">
+            <span style="font-size:11px;padding:2px 9px;border-radius:20px;background:${rc}20;color:${rc};font-weight:700;">${RL[d.recipe]||'R'+d.recipe}</span>
+            <span style="font-size:11px;padding:2px 9px;border-radius:20px;background:${GB[d.grade]||'#eee'};color:${GT[d.grade]||'#888'};font-weight:700;">${d.grade}등급</span>
+          </div>
+          <div style="font-size:14px;color:#2E3A4A;line-height:1.6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.question}</div>
+          <div style="margin-top:8px;background:#E0E8E8;border-radius:20px;height:6px;overflow:hidden;">
+            <div style="width:${sc}%;height:100%;background:${scoreColor};border-radius:20px;"></div>
+          </div>
+        </div>
+        <div style="font-size:24px;font-weight:900;color:${scoreColor};min-width:52px;text-align:right;">${sc}</div>
+      </div>`;
+    }).join('')
+  }
 </script>
 </body>
 </html>
