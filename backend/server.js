@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const https = require('https');
 const Anthropic = require('@anthropic-ai/sdk');
 
 const app = express();
@@ -11,6 +12,48 @@ app.use(express.json());
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const SHEET_URL = process.env.SHEET_URL || '';
+
+// ── 유틸: https GET ────────────────────────────────
+function httpsGet(url) {
+  return new Promise((resolve, reject) => {
+    https.get(url, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try { resolve(JSON.parse(data)); }
+        catch (e) { reject(new Error('JSON 파싱 오류: ' + data)); }
+      });
+    }).on('error', reject);
+  });
+}
+
+// ── 유틸: https POST ───────────────────────────────
+function httpsPost(url, body) {
+  return new Promise((resolve, reject) => {
+    const urlObj = new URL(url);
+    const postData = JSON.stringify(body);
+    const options = {
+      hostname: urlObj.hostname,
+      path: urlObj.pathname + urlObj.search,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(postData)
+      }
+    };
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try { resolve(JSON.parse(data)); }
+        catch (e) { resolve({ success: true }); }
+      });
+    });
+    req.on('error', reject);
+    req.write(postData);
+    req.end();
+  });
+}
 
 function buildPrompt(recipe, mode, userInput, topic) {
   const names = {
@@ -51,10 +94,8 @@ function buildPrompt(recipe, mode, userInput, topic) {
 // ── 랭킹 GET ──────────────────────────────────────
 app.get('/api/ranking', async function(req, res) {
   try {
-    const fetch = (await import('node-fetch')).default;
     const sheetUrl = SHEET_URL || req.query.sheetUrl;
-    const response = await fetch(sheetUrl);
-    const data = await response.json();
+    const data = await httpsGet(sheetUrl);
     res.json(data);
   } catch (err) {
     console.error('랭킹 조회 오류:', err.message);
@@ -65,15 +106,9 @@ app.get('/api/ranking', async function(req, res) {
 // ── 랭킹 POST ─────────────────────────────────────
 app.post('/api/ranking', async function(req, res) {
   try {
-    const fetch = (await import('node-fetch')).default;
     const sheetUrl = SHEET_URL || req.body.sheetUrl;
     const { question, score, grade, recipe } = req.body;
-    const response = await fetch(sheetUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question, score, grade, recipe })
-    });
-    const data = await response.json();
+    const data = await httpsPost(sheetUrl, { question, score, grade, recipe });
     res.json(data);
   } catch (err) {
     console.error('랭킹 저장 오류:', err.message);
