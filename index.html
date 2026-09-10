@@ -526,17 +526,44 @@
 
   function switchMode(mode) {
     currentMode = mode;
-    document.getElementById('feedbackInputWrap').style.display = mode === 'feedback' ? 'block' : 'none';
-    document.getElementById('generateInputWrap').style.display = mode === 'generate' ? 'block' : 'none';
-    document.getElementById('promptInputWrap').style.display = mode === 'prompt' ? 'block' : 'none';
-    document.getElementById('topicRow').style.display = mode === 'generate' ? 'flex' : 'none';
+
+    // 모든 입력 영역 숨기기
+    document.getElementById('feedbackInputWrap').style.display = 'none';
+    document.getElementById('generateInputWrap').style.display = 'none';
+    document.getElementById('promptInputWrap').style.display = 'none';
+    document.getElementById('promptStepsWrap').style.display = 'none';
+    document.getElementById('topicRow').style.display = 'none';
+    document.getElementById('runBtn').style.display = 'inline-flex';
+
+    // 모드별 표시
+    if (mode === 'feedback') document.getElementById('feedbackInputWrap').style.display = 'block';
+    if (mode === 'generate') {
+      document.getElementById('generateInputWrap').style.display = 'block';
+      document.getElementById('topicRow').style.display = 'flex';
+    }
+    if (mode === 'prompt') document.getElementById('promptInputWrap').style.display = 'block';
+
     document.getElementById('btnIcon').textContent = mode === 'feedback' ? '🔍' : mode === 'generate' ? '✨' : '🤖';
     document.getElementById('btnText').textContent = mode === 'feedback' ? '질문 평가하기' : mode === 'generate' ? '질문 생성하기' : '프롬프트 분석하기';
     document.querySelectorAll('.mode-radio label').forEach(l => l.classList.remove('selected'));
     const labelId = mode === 'feedback' ? 'label-feedback' : mode === 'generate' ? 'label-generate' : 'label-prompt';
     document.getElementById(labelId).classList.add('selected');
     document.getElementById('infoBar').style.display = mode === 'prompt' ? 'none' : 'flex';
-    document.getElementById('runBtn').style.display = 'inline-flex';
+
+    // 프롬프트 모드 상태 초기화
+    if (mode !== 'prompt') {
+      promptStepData = {};
+      const promptInput = document.getElementById('promptInput');
+      if (promptInput) promptInput.value = '';
+      document.getElementById('promptCharCount').textContent = '0';
+      [1, 2, 3].forEach(i => {
+        const el = document.getElementById('trackStep' + i);
+        if (el) el.style.display = 'none';
+      });
+      const stepContent = document.getElementById('stepContent');
+      if (stepContent) stepContent.innerHTML = '';
+    }
+
     hideResult();
   }
 
