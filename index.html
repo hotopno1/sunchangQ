@@ -658,11 +658,32 @@
     }
   }
 
-  function highlightText(fullText, keyword, color) {
-    if (!keyword || !fullText.includes(keyword)) return fullText;
-    const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    return fullText.replace(new RegExp(escaped), 
-      '<span style="border-bottom:3px solid ' + color + ';font-weight:700;color:' + color + ';padding-bottom:1px;">' + keyword + '</span>');
+  function findAddedParts(original, newText) {
+    // 원본에 없는 새로운 단어 덩어리를 찾아 반환
+    const origWords = original.replace(/[^\w가-힣]/g, ' ').split(/\s+/).filter(w => w.length > 1);
+    const newWords = newText.split(/(\s+)/);
+    let result = '';
+    let buffer = '';
+    let inNew = false;
+    for (let i = 0; i < newWords.length; i++) {
+      const word = newWords[i];
+      const clean = word.replace(/[^\w가-힣]/g, '');
+      if (clean.length > 1 && !origWords.includes(clean)) {
+        buffer += word;
+        inNew = true;
+      } else {
+        if (inNew && buffer.trim()) {
+          result += '<span style="border-bottom:3px solid COLOR;font-weight:700;color:COLOR;padding-bottom:1px;">' + buffer + '</span>';
+          buffer = '';
+          inNew = false;
+        }
+        result += word;
+      }
+    }
+    if (inNew && buffer.trim()) {
+      result += '<span style="border-bottom:3px solid COLOR;font-weight:700;color:COLOR;padding-bottom:1px;">' + buffer + '</span>';
+    }
+    return result;
   }
 
   function renderStepUI(step, d, inputSentence) {
@@ -671,11 +692,10 @@
     const labels = { 1: '① 명확하게', 2: '② 구체적으로', 3: '③ 목적 분명히' };
     const c = colors[step], bg = bgs[step];
 
-    // options가 객체 배열인지 문자열 배열인지 처리
     const optionsHtml = d.options.map((opt, i) => {
       const text = typeof opt === 'object' ? opt.text : opt;
-      const highlight = typeof opt === 'object' ? opt.highlight : null;
-      const displayText = highlight ? highlightText(text, highlight, c) : text;
+      // 원본과 비교해서 추가된 부분 자동 감지
+      const displayText = findAddedParts(inputSentence, text).replace(/COLOR/g, c);
       const safeText = text.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
       return '<div onclick="selectStepOption(' + step + ', \'' + safeText + '\')" ' +
         'style="cursor:pointer;border:2.5px solid ' + c + '40;border-radius:14px;padding:18px 22px;margin-bottom:12px;font-size:17px;color:var(--navy);line-height:1.8;background:white;transition:all 0.15s;" ' +
