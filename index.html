@@ -192,7 +192,7 @@
   }
   .recipe-info-bar .emoji { font-size: 40px; flex-shrink: 0; }
   .recipe-info-bar h2 { font-size: 23px; font-weight: 700; color: var(--navy); margin-bottom: 7px; }
-  .recipe-info-bar p, #infoDesc { font-size: 17px; color: var(--navy-mid); line-height: 1.75; }
+  .recipe-info-bar p, #infoDesc, #genInfoDesc { font-size: 17px; color: var(--navy-mid); line-height: 1.75; }
   .qm-wrap { margin-top: 14px; overflow-x: auto; }
   .qm-topic { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
   .qm-table { display: grid; grid-template-columns: 76px repeat(3, minmax(150px, 1fr)); gap: 6px; min-width: 560px; }
@@ -211,6 +211,7 @@
     display: inline-block;
     line-height: 1.6;
   }
+  .recipe-info-bar.swap { animation: fadeUp 0.25s ease; }
 
   /* 입력 블록 */
   .input-block {
@@ -378,55 +379,136 @@
   .history-item:hover { border-color: var(--mint); color: var(--navy); background: var(--mint-light); }
   .h-recipe { font-weight: 700; }
   .h-q { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* ══════════ 탭 레이아웃 ══════════ */
+  .tabs-wrap { flex: 1; width: 100%; padding: 26px 32px 36px; }
+  .tabs { display: flex; gap: 6px; padding-left: 6px; }
+  .tab {
+    border: none; cursor: pointer; font-family: inherit;
+    font-size: 19px; font-weight: 700; padding: 16px 30px;
+    border-radius: 16px 16px 0 0;
+    background: #DCE6E6; color: var(--navy-mid);
+    border-top: 4px solid transparent;
+    transition: background 0.15s;
+  }
+  .tab:hover { background: #E8EFEF; }
+  .tab.active { background: var(--white); color: var(--navy); border-top-color: var(--mint); box-shadow: 0 -4px 14px rgba(10,40,60,0.06); }
+  .tab-panel { background: var(--white); border-radius: 0 18px 18px 18px; padding: 30px 32px; box-shadow: var(--shadow); min-height: 60vh; }
+  .panel[hidden] { display: none; }
+  .tab-panel .recipe-info-bar, .tab-panel .input-block, .tab-panel .result-area, .tab-panel .history-area { box-shadow: none; border: 1.5px solid #E3EAEA; }
+  .tab-panel .recipe-info-bar { border-left-width: 7px; }
+  .panel-label { display: block; font-size: 19px; font-weight: 700; color: var(--navy); margin-bottom: 12px; }
+
+  /* ① 질문 생성하기 */
+  .gen-inputs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .gen-field label { display: block; font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+  .gen-field .req { font-size: 13px; color: #EF4444; font-weight: 700; margin-left: 4px; }
+  .gen-field input { width: 100%; border: 2.5px solid var(--grey-mid); border-radius: 12px; padding: 14px 16px; font-family: inherit; font-size: 18px; color: var(--navy); background: #FAFCFC; outline: none; transition: border-color 0.14s; }
+  .gen-field input:focus { border-color: var(--mint); background: var(--white); }
+  .gen-hint { font-size: 16px; color: var(--navy-mid); margin: 12px 0 22px; }
+  .gen-body { display: grid; grid-template-columns: 360px 1fr; gap: 26px; align-items: start; }
+  .gen-recipes { display: flex; flex-direction: column; gap: 10px; }
+  .gen-recipes-title { font-size: 17px; font-weight: 700; color: var(--navy-mid); margin-bottom: 2px; }
+  .gen-opt { display: flex; align-items: center; gap: 12px; padding: 14px 16px 14px 18px; border-radius: 14px; border: 2.5px solid #E3EAEA; background: var(--white); cursor: pointer; position: relative; transition: all 0.15s; }
+  .gen-opt::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; border-radius: 12px 0 0 12px; }
+  .gen-opt.r1::before { background: var(--r1); } .gen-opt.r2::before { background: var(--r2); }
+  .gen-opt.r3::before { background: var(--r3); } .gen-opt.r4::before { background: var(--r4); }
+  .gen-opt input { accent-color: var(--mint); width: 20px; height: 20px; flex-shrink: 0; }
+  .gen-opt-text { display: flex; flex-direction: column; }
+  .gen-opt .rnum { font-size: 12px; font-weight: 700; }
+  .gen-opt.r1 .rnum { color: var(--r1); } .gen-opt.r2 .rnum { color: var(--r2); }
+  .gen-opt.r3 .rnum { color: var(--r3); } .gen-opt.r4 .rnum { color: var(--r4); }
+  .gen-opt .rtitle { font-size: 17px; font-weight: 700; color: var(--navy); line-height: 1.35; }
+  .gen-opt .rdesc { font-size: 13px; color: var(--navy-mid); }
+  .gen-opt.selected.r1 { background: var(--r1-light); border-color: var(--r1); }
+  .gen-opt.selected.r2 { background: var(--r2-light); border-color: var(--r2); }
+  .gen-opt.selected.r3 { background: var(--r3-light); border-color: var(--r3); }
+  .gen-opt.selected.r4 { background: var(--r4-light); border-color: var(--r4); }
+  .gen-recipes .btn-primary { justify-content: center; margin-top: 8px; }
+  .gen-right { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+  .gen-result { border: 2px solid #E3EAEA; border-radius: 16px; padding: 24px 26px; min-height: 420px; }
+  .gen-empty { height: 100%; min-height: 370px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--navy-mid); font-size: 20px; font-weight: 700; text-align: center; }
+  .gen-empty span { font-size: 15px; font-weight: 400; color: var(--grey-mid); }
+
+  /* ② AI 프롬프트 만들기 */
+  .prompt-row { display: flex; gap: 18px; align-items: flex-start; margin-bottom: 26px; }
+  .prompt-input-col { flex: 1; min-width: 0; }
+  .prompt-input-col textarea { min-height: 120px; }
+  .prompt-row .btn-primary { margin-top: 0; white-space: nowrap; min-height: 120px; }
+
+  /* ③ 내 질문 평가받기 */
+  .fb-layout { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 26px; align-items: start; }
+  .fb-main { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+  .recipe-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .recipe-tabs .recipe-btn:hover { transform: translateY(-2px); }
+  .recipe-tabs .recipe-btn.active { outline: 2.5px solid currentColor; }
+  .recipe-tabs .recipe-btn.r1.active { outline-color: var(--r1); }
+  .recipe-tabs .recipe-btn.r2.active { outline-color: var(--r2); }
+  .recipe-tabs .recipe-btn.r3.active { outline-color: var(--r3); }
+  .recipe-tabs .recipe-btn.r4.active { outline-color: var(--r4); }
+  .btn-row { display: flex; justify-content: flex-end; }
+  .fb-side { position: sticky; top: 100px; }
+  .fb-side #sideRankingBox { margin-top: 0 !important; }
+  .fb-side #sideRankingList { max-height: 560px !important; }
+
   /* ══════════ 휴대폰·태블릿 (화면 너비 900px 이하) ══════════ */
   @media (max-width: 900px) {
     body { font-size: 16px; }
-
-    /* 헤더: 한 줄로 작게 */
     header { padding: 12px 14px; gap: 10px; }
     .logo-badge { font-size: 12px; padding: 5px 9px; white-space: nowrap; }
     header h1 { font-size: 19px; white-space: nowrap; }
     header .sub { display: none; }
     .ranking-btn { margin-left: auto; font-size: 13px; padding: 7px 11px; white-space: nowrap; }
 
-    /* 전체 배치: 위아래로 쌓기
-       순서 = 모드 선택 → 레시피(2칸씩) → 입력·결과 → 랭킹 */
-    .app-shell { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 12px; gap: 10px; }
-    .sidebar { display: contents; }
-    .sidebar > .mode-toggle { grid-column: 1 / -1; order: 1; }
-    .sidebar > .sidebar-label { grid-column: 1 / -1; order: 2; margin-top: 4px !important; font-size: 15px; }
-    .sidebar > .recipe-btn { order: 3; padding: 12px 10px 12px 16px; }
-    .main-panel { grid-column: 1 / -1; order: 4; gap: 12px; }
-    #sideRankingBox { grid-column: 1 / -1; order: 5; }
-    #sideRankingList { max-height: 420px !important; }
+    .tabs-wrap { padding: 12px 10px 24px; }
+    .tabs { gap: 4px; padding-left: 0; }
+    .tab { flex: 1; font-size: 14px; padding: 12px 4px; line-height: 1.3; border-radius: 12px 12px 0 0; white-space: nowrap; }
+    .tab-extra { display: none; }
+    .tab-panel { padding: 18px 14px; border-radius: 0 0 14px 14px; min-height: 0; }
+    .panel-label { font-size: 16px; }
 
-    /* 모드 선택: 가로 3칸 */
-    .mode-radio { flex-direction: row; gap: 6px; }
-    .mode-radio label { flex: 1; flex-direction: column; text-align: center; gap: 4px; font-size: 13px; padding: 10px 4px; line-height: 1.3; }
+    .gen-inputs { grid-template-columns: 1fr; gap: 12px; }
+    .gen-field label { font-size: 15px; }
+    .gen-field input { font-size: 16px; padding: 12px 14px; }
+    .gen-hint { font-size: 14px; margin: 10px 0 16px; }
+    .gen-body { grid-template-columns: 1fr; gap: 16px; }
+    .gen-recipes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .gen-recipes-title, .gen-recipes .btn-primary { grid-column: 1 / -1; }
+    .gen-opt { padding: 10px 8px 10px 14px; gap: 8px; }
+    .gen-opt input { width: 17px; height: 17px; }
+    .gen-opt .rtitle { font-size: 13px; }
+    .gen-opt .rdesc { font-size: 11px; }
+    .gen-right { gap: 14px; }
+    .gen-result { padding: 16px 12px; min-height: 200px; }
+    .gen-empty { min-height: 160px; font-size: 16px; }
+    .gen-empty span { font-size: 13px; }
 
-    /* 레시피 버튼: 2칸 */
+    .prompt-row { flex-direction: column; align-items: stretch; gap: 10px; margin-bottom: 18px; }
+    .prompt-row .btn-primary { min-height: 0; }
+
+    .fb-layout { grid-template-columns: 1fr; gap: 16px; }
+    .fb-side { position: static; }
+    .fb-side #sideRankingList { max-height: 420px !important; }
+    .recipe-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .recipe-btn { padding: 12px 10px 12px 16px; }
     .recipe-btn:hover { transform: none; }
     .recipe-btn .rnum { font-size: 11px; margin-bottom: 3px; }
     .recipe-btn .rtitle { font-size: 14px; }
     .recipe-btn .rdesc { font-size: 12px; }
 
-    /* 레시피 설명 */
-    .recipe-info-bar { padding: 16px; gap: 10px; border-left-width: 5px; }
+    .recipe-info-bar { padding: 16px; gap: 10px; }
+    .tab-panel .recipe-info-bar { border-left-width: 5px; }
     .recipe-info-bar .emoji { font-size: 28px; }
     .recipe-info-bar > div { min-width: 0; }
-    .qm-wrap { -webkit-overflow-scrolling: touch; }
     .recipe-info-bar h2 { font-size: 18px; }
-    .recipe-info-bar p, #infoDesc { font-size: 15px; }
+    .recipe-info-bar p, #infoDesc, #genInfoDesc { font-size: 15px; }
     .recipe-info-bar .tip { font-size: 13px; }
+    .qm-wrap { -webkit-overflow-scrolling: touch; }
 
-    /* 입력·버튼 (16px 이상이어야 아이폰에서 입력할 때 화면이 확대되지 않음) */
     .input-block { padding: 18px 16px; }
     .input-block label { font-size: 16px; }
-    textarea, .topic-row input { font-size: 16px; min-height: 120px; }
-    .topic-row input { min-height: 0; }
+    textarea { font-size: 16px; min-height: 120px; }
     .btn-primary { width: 100%; justify-content: center; font-size: 18px; padding: 16px; }
 
-    /* 결과 */
     .result-area { padding: 18px 14px; }
     .result-header h3 { font-size: 18px; }
     .score-ring { padding: 14px; gap: 14px; }
@@ -436,17 +518,11 @@
     .fb-body, .q-text { font-size: 16px; }
     .question-item { flex-wrap: wrap; }
 
-    /* AI 프롬프트 모드 단계 바 */
     #stepBar1, #stepBar2, #stepBar3 { font-size: 14px !important; padding: 11px 4px !important; }
     #stepContent textarea { min-height: 80px; }
-
-    /* 랭킹 등록 */
     #studentIdInput { min-width: 0 !important; width: 100%; font-size: 19px !important; }
     #rankSaveBtn { width: 100%; }
-
-    /* 랭킹 보드 팝업 */
     #rankingModal > div { margin: 12px !important; padding: 20px 16px !important; }
-
     .history-item { font-size: 13px; }
   }
 </style>
@@ -460,116 +536,72 @@
   <button class="ranking-btn" onclick="openRanking()">🏆 랭킹 보드</button>
 </header>
 
-<div class="app-shell">
-  <!-- 사이드바 -->
-  <div class="sidebar">
-    <!-- 모드 선택 (맨 위) -->
-    <div class="mode-toggle">
-      <div class="sidebar-label">모드 선택</div>
-      <div class="mode-radio">
-        <label class="selected" id="label-feedback">
-          <input type="radio" name="mode" value="feedback" checked onchange="switchMode('feedback')">
-          🔍 내 질문 평가받기
-        </label>
-        <label id="label-generate">
-          <input type="radio" name="mode" value="generate" onchange="switchMode('generate')">
-          ✨ 질문 생성하기
-        </label>
-        <label id="label-prompt">
-          <input type="radio" name="mode" value="prompt" onchange="switchMode('prompt')">
-          🤖 AI 프롬프트 만들기
-        </label>
-      </div>
-    </div>
+<div class="tabs-wrap">
+  <!-- 모드 선택 탭 -->
+  <nav class="tabs">
+    <button class="tab active" id="tab-generate" onclick="switchMode('generate')">✨ 질문 생성<span class="tab-extra">하기</span></button>
+    <button class="tab" id="tab-prompt" onclick="switchMode('prompt')">🤖 AI 프롬프트<span class="tab-extra"> 만들기</span></button>
+    <button class="tab" id="tab-feedback" onclick="switchMode('feedback')">🔍 <span class="tab-extra">내 </span>질문 평가<span class="tab-extra">받기</span></button>
+  </nav>
 
-    <!-- 레시피 선택 -->
-    <div class="sidebar-label" style="margin-top:4px;">레시피 선택</div>
-    <button class="recipe-btn r1 active" onclick="selectRecipe(1)">
-      <div class="rnum">RECIPE 1</div>
-      <div class="rtitle">"만약에(if)"로 상상력 질문 만들기</div>
-      <div class="rdesc">5W1H 변형하기</div>
-    </button>
-    <button class="recipe-btn r2" onclick="selectRecipe(2)">
-      <div class="rnum">RECIPE 2</div>
-      <div class="rtitle">'왜? 왜? 왜?' 본질을 파고들기</div>
-      <div class="rdesc">5-Why 기법</div>
-    </button>
-    <button class="recipe-btn r3" onclick="selectRecipe(3)">
-      <div class="rnum">RECIPE 3</div>
-      <div class="rtitle">가로×세로 조합 고차원 질문</div>
-      <div class="rdesc">Q-Matrix 기법</div>
-    </button>
-    <button class="recipe-btn r4" onclick="selectRecipe(4)">
-      <div class="rnum">RECIPE 4</div>
-      <div class="rtitle">열린 질문 만들기</div>
-      <div class="rdesc">닫힌 → 열린 질문으로 전환</div>
-    </button>
+  <div class="tab-panel">
 
-    <!-- 사이드바 랭킹보드 (내 질문 평가받기 모드에서만 표시) -->
-    <div id="sideRankingBox" style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-top:4px;">
-      <div style="background:var(--navy);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;">
-        <div style="color:white;font-size:15px;font-weight:700;">🏆 질문 랭킹</div>
-        <button onclick="loadSideRanking()" style="background:var(--yellow);color:var(--navy);border:none;border-radius:7px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;">↻ 새로고침</button>
+    <!-- ① 질문 생성하기 -->
+    <section class="panel" id="panel-generate">
+      <div class="gen-inputs">
+        <div class="gen-field"><label for="genSubject">📚 과목</label><input id="genSubject" type="text" placeholder="예: 과학" maxlength="30" onkeydown="if(event.key==='Enter')runGenerate()"></div>
+        <div class="gen-field"><label for="genUnit">📖 단원명</label><input id="genUnit" type="text" placeholder="예: 물질의 상태 변화" maxlength="50" onkeydown="if(event.key==='Enter')runGenerate()"></div>
+        <div class="gen-field"><label for="genKeyword">🔑 핵심 키워드 <span class="req">*필수</span></label><input id="genKeyword" type="text" placeholder="예: 기화, 수증기" maxlength="50" onkeydown="if(event.key==='Enter')runGenerate()"></div>
       </div>
-      <!-- 필터 -->
-      <div style="display:flex;gap:0;border-bottom:1px solid var(--grey-light);">
-        <button onclick="sideFilterBy('all')" id="sf-all" style="flex:1;padding:8px 4px;font-size:11px;font-weight:700;border:none;background:var(--mint);color:white;cursor:pointer;">전체</button>
-        <button onclick="sideFilterBy(1)" id="sf-1" style="flex:1;padding:8px 4px;font-size:11px;font-weight:600;border:none;background:var(--grey-light);color:var(--navy-mid);cursor:pointer;border-left:1px solid var(--grey-mid);">R1</button>
-        <button onclick="sideFilterBy(2)" id="sf-2" style="flex:1;padding:8px 4px;font-size:11px;font-weight:600;border:none;background:var(--grey-light);color:var(--navy-mid);cursor:pointer;border-left:1px solid var(--grey-mid);">R2</button>
-        <button onclick="sideFilterBy(3)" id="sf-3" style="flex:1;padding:8px 4px;font-size:11px;font-weight:600;border:none;background:var(--grey-light);color:var(--navy-mid);cursor:pointer;border-left:1px solid var(--grey-mid);">R3</button>
-        <button onclick="sideFilterBy(4)" id="sf-4" style="flex:1;padding:8px 4px;font-size:11px;font-weight:600;border:none;background:var(--grey-light);color:var(--navy-mid);cursor:pointer;border-left:1px solid var(--grey-mid);">R4</button>
-      </div>
-      <!-- 통계 -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-bottom:1px solid var(--grey-light);">
-        <div style="padding:10px 8px;text-align:center;border-right:1px solid var(--grey-light);">
-          <div style="font-size:10px;color:var(--navy-mid);">참여</div>
-          <div style="font-size:16px;font-weight:700;color:var(--navy);" id="sr-count">-</div>
+      <p class="gen-hint">* 위 빈칸을 입력하면 AI가 레시피에 맞는 질문을 생성해드려요.</p>
+
+      <div class="gen-body">
+        <div class="gen-recipes">
+          <div class="gen-recipes-title">레시피를 골라보세요</div>
+            <label class="gen-opt r1 selected" id="genOpt1">
+              <input type="radio" name="genRecipe" value="1" checked onchange="selectGenRecipe(1)">
+              <span class="gen-opt-text"><span class="rnum">RECIPE 1</span><span class="rtitle">"만약에(if)"로 상상력 질문 만들기</span><span class="rdesc">5W1H 변형하기</span></span>
+            </label>
+            <label class="gen-opt r2" id="genOpt2">
+              <input type="radio" name="genRecipe" value="2" onchange="selectGenRecipe(2)">
+              <span class="gen-opt-text"><span class="rnum">RECIPE 2</span><span class="rtitle">'왜? 왜? 왜?' 본질을 파고들기</span><span class="rdesc">5-Why 기법</span></span>
+            </label>
+            <label class="gen-opt r3" id="genOpt3">
+              <input type="radio" name="genRecipe" value="3" onchange="selectGenRecipe(3)">
+              <span class="gen-opt-text"><span class="rnum">RECIPE 3</span><span class="rtitle">가로×세로 조합 고차원 질문</span><span class="rdesc">Q-Matrix 기법</span></span>
+            </label>
+            <label class="gen-opt r4" id="genOpt4">
+              <input type="radio" name="genRecipe" value="4" onchange="selectGenRecipe(4)">
+              <span class="gen-opt-text"><span class="rnum">RECIPE 4</span><span class="rtitle">열린 질문 만들기</span><span class="rdesc">닫힌 → 열린 질문으로 전환</span></span>
+            </label>
+          <button class="btn-primary" id="genBtn" onclick="runGenerate()">✨ 질문 생성하기</button>
         </div>
-        <div style="padding:10px 8px;text-align:center;border-right:1px solid var(--grey-light);">
-          <div style="font-size:10px;color:var(--navy-mid);">평균</div>
-          <div style="font-size:16px;font-weight:700;color:var(--mint);" id="sr-avg">-</div>
-        </div>
-        <div style="padding:10px 8px;text-align:center;">
-          <div style="font-size:10px;color:var(--navy-mid);">최고</div>
-          <div style="font-size:16px;font-weight:700;color:#059669;" id="sr-max">-</div>
+        <div class="gen-right">
+          <!-- 레시피 설명 (질문 생성 탭) -->
+          <div class="recipe-info-bar" id="genInfoBar">
+            <div class="emoji" id="genInfoEmoji"></div>
+            <div>
+              <h2 id="genInfoTitle"></h2>
+              <div id="genInfoDesc"></div>
+              <span class="tip" id="genInfoTip"></span>
+            </div>
+          </div>
+          <div class="gen-result" id="genResult">
+            <div class="gen-empty">📝 예시 질문이 여기에 나타나요<span>과목·단원명·핵심 키워드를 입력하고, 레시피를 고른 뒤 버튼을 눌러보세요</span></div>
+          </div>
         </div>
       </div>
-      <!-- 랭킹 리스트 -->
-      <div id="sideRankingList" style="max-height:320px;overflow-y:auto;padding:10px 12px;">
-        <div style="text-align:center;padding:20px;color:var(--grey-mid);font-size:13px;">불러오는 중...</div>
-      </div>
-    </div>
-  </div>
+    </section>
 
-  <!-- 메인 패널 -->
-  <div class="main-panel">
-    <!-- 레시피 설명 -->
-    <div class="recipe-info-bar" id="infoBar">
-      <div class="emoji" id="infoEmoji">🔀</div>
-      <div>
-        <h2 id="infoTitle">레시피 1 · 5W1H 변형하기</h2>
-        <div id="infoDesc">who / when / where / what / why / how 중 하나를 골라, <strong>"만약에(if)"</strong>를 추가해 상상력 질문으로 바꾸는 기법입니다.</div>
-        <span class="tip" id="infoTip">💡 예: "이순신 장군은 누구인가요?" → "만약 이순신 장군에게 거북선이 없었다면 전쟁은 어떻게 달라졌을까요?"</span>
-      </div>
-    </div>
-
-    <!-- 입력 영역 -->
-    <div class="input-block">
-      <div id="topicRow" class="topic-row" style="display:none;">
-        <input type="text" id="topicInput" placeholder="주제나 키워드를 입력하세요 (예: 기후변화, 스마트폰 중독…)" maxlength="80">
-      </div>
-      <div id="feedbackInputWrap">
-        <label for="questionInput">✏️ 내가 만든 질문을 입력하세요</label>
-        <textarea id="questionInput" placeholder="여기에 질문을 써보세요…" maxlength="300" oninput="updateChar()"></textarea>
-        <div class="char-count"><span id="charCount">0</span> / 300</div>
-      </div>
-      <div id="generateInputWrap" style="display:none;">
-        <label>✨ 위에 주제를 입력하면 AI가 레시피에 맞는 질문을 생성해드려요</label>
-      </div>
-      <div id="promptInputWrap" style="display:none;">
-        <label for="promptInput">🤖 AI에게 보내고 싶은 문장을 입력하세요</label>
-        <textarea id="promptInput" placeholder="예: 좋은 책 추천해줘 / 주말에 뭐 할지 알려줘 / 동물은 뭐가 있어?" maxlength="300" oninput="updatePromptChar()"></textarea>
-        <div class="char-count"><span id="promptCharCount">0</span> / 300</div>
+    <!-- ② AI 프롬프트 만들기 -->
+    <section class="panel" id="panel-prompt" hidden>
+      <label class="panel-label" for="promptInput">🤖 AI에게 보내고 싶은 문장을 입력하세요</label>
+      <div class="prompt-row">
+        <div class="prompt-input-col">
+          <textarea id="promptInput" placeholder="예: 좋은 책 추천해줘 / 주말에 뭐 할지 알려줘 / 동물은 뭐가 있어?" maxlength="300" oninput="updatePromptChar()"></textarea>
+          <div class="char-count"><span id="promptCharCount">0</span> / 300</div>
+        </div>
+        <button class="btn-primary" id="promptBtn" onclick="startPrompt()">🤖 프롬프트 분석하기</button>
       </div>
 
       <!-- 3단계 진행 영역 (프롬프트 모드 전용) -->
@@ -611,21 +643,103 @@
         <!-- 단계별 콘텐츠 -->
         <div id="stepContent"></div>
       </div>
-      <button class="btn-primary" id="runBtn" onclick="runAI()">
-        <span id="btnIcon">🔍</span> <span id="btnText">질문 평가하기</span>
-      </button>
-    </div>
+    </section>
 
-    <!-- 결과 영역 -->
-    <div class="result-area" id="resultArea">
-      <div id="resultContent"></div>
-    </div>
+    <!-- ③ 내 질문 평가받기 -->
+    <section class="panel" id="panel-feedback" hidden>
+      <div class="fb-layout">
+        <div class="fb-main">
+          <div class="recipe-tabs">
+          <button class="recipe-btn r1 active" onclick="selectRecipe(1)">
+            <div class="rnum">RECIPE 1</div>
+            <div class="rtitle">"만약에(if)"로 상상력 질문 만들기</div>
+            <div class="rdesc">5W1H 변형하기</div>
+          </button>
+          <button class="recipe-btn r2" onclick="selectRecipe(2)">
+            <div class="rnum">RECIPE 2</div>
+            <div class="rtitle">'왜? 왜? 왜?' 본질을 파고들기</div>
+            <div class="rdesc">5-Why 기법</div>
+          </button>
+          <button class="recipe-btn r3" onclick="selectRecipe(3)">
+            <div class="rnum">RECIPE 3</div>
+            <div class="rtitle">가로×세로 조합 고차원 질문</div>
+            <div class="rdesc">Q-Matrix 기법</div>
+          </button>
+          <button class="recipe-btn r4" onclick="selectRecipe(4)">
+            <div class="rnum">RECIPE 4</div>
+            <div class="rtitle">열린 질문 만들기</div>
+            <div class="rdesc">닫힌 → 열린 질문으로 전환</div>
+          </button>
+          </div>
 
-    <!-- 히스토리 -->
-    <div class="history-area" id="historyArea" style="display:none;">
-      <h3>📋 이번 세션 기록</h3>
-      <div id="historyList"></div>
-    </div>
+          <!-- 레시피 설명 -->
+          <div class="recipe-info-bar" id="infoBar">
+            <div class="emoji" id="infoEmoji">🔀</div>
+            <div>
+              <h2 id="infoTitle">레시피 1 · 5W1H 변형하기</h2>
+              <div id="infoDesc">who / when / where / what / why / how 중 하나를 골라, <strong>"만약에(if)"</strong>를 추가해 상상력 질문으로 바꾸는 기법입니다.</div>
+              <span class="tip" id="infoTip">💡 예: "이순신 장군은 누구인가요?" → "만약 이순신 장군에게 거북선이 없었다면 전쟁은 어떻게 달라졌을까요?"</span>
+            </div>
+          </div>
+
+          <div class="input-block">
+            <label for="questionInput">✏️ 내가 만든 질문을 입력하세요</label>
+            <textarea id="questionInput" placeholder="여기에 질문을 써보세요…" maxlength="300" oninput="updateChar()"></textarea>
+            <div class="char-count"><span id="charCount">0</span> / 300</div>
+            <div class="btn-row"><button class="btn-primary" id="runBtn" onclick="runFeedback()">🔍 질문 평가하기</button></div>
+          </div>
+
+          <!-- 결과 영역 -->
+          <div class="result-area" id="resultArea">
+            <div id="resultContent"></div>
+          </div>
+
+          <!-- 히스토리 -->
+          <div class="history-area" id="historyArea" style="display:none;">
+            <h3>📋 이번 세션 기록</h3>
+            <div id="historyList"></div>
+          </div>
+        </div>
+
+        <aside class="fb-side">
+        <!-- 사이드바 랭킹보드 (내 질문 평가받기 모드에서만 표시) -->
+        <div id="sideRankingBox" style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-top:4px;">
+          <div style="background:var(--navy);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;">
+            <div style="color:white;font-size:15px;font-weight:700;">🏆 질문 랭킹</div>
+            <button onclick="loadSideRanking()" style="background:var(--yellow);color:var(--navy);border:none;border-radius:7px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;">↻ 새로고침</button>
+          </div>
+          <!-- 필터 -->
+          <div style="display:flex;gap:0;border-bottom:1px solid var(--grey-light);">
+            <button onclick="sideFilterBy('all')" id="sf-all" style="flex:1;padding:8px 4px;font-size:11px;font-weight:700;border:none;background:var(--mint);color:white;cursor:pointer;">전체</button>
+            <button onclick="sideFilterBy(1)" id="sf-1" style="flex:1;padding:8px 4px;font-size:11px;font-weight:600;border:none;background:var(--grey-light);color:var(--navy-mid);cursor:pointer;border-left:1px solid var(--grey-mid);">R1</button>
+            <button onclick="sideFilterBy(2)" id="sf-2" style="flex:1;padding:8px 4px;font-size:11px;font-weight:600;border:none;background:var(--grey-light);color:var(--navy-mid);cursor:pointer;border-left:1px solid var(--grey-mid);">R2</button>
+            <button onclick="sideFilterBy(3)" id="sf-3" style="flex:1;padding:8px 4px;font-size:11px;font-weight:600;border:none;background:var(--grey-light);color:var(--navy-mid);cursor:pointer;border-left:1px solid var(--grey-mid);">R3</button>
+            <button onclick="sideFilterBy(4)" id="sf-4" style="flex:1;padding:8px 4px;font-size:11px;font-weight:600;border:none;background:var(--grey-light);color:var(--navy-mid);cursor:pointer;border-left:1px solid var(--grey-mid);">R4</button>
+          </div>
+          <!-- 통계 -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-bottom:1px solid var(--grey-light);">
+            <div style="padding:10px 8px;text-align:center;border-right:1px solid var(--grey-light);">
+              <div style="font-size:10px;color:var(--navy-mid);">참여</div>
+              <div style="font-size:16px;font-weight:700;color:var(--navy);" id="sr-count">-</div>
+            </div>
+            <div style="padding:10px 8px;text-align:center;border-right:1px solid var(--grey-light);">
+              <div style="font-size:10px;color:var(--navy-mid);">평균</div>
+              <div style="font-size:16px;font-weight:700;color:var(--mint);" id="sr-avg">-</div>
+            </div>
+            <div style="padding:10px 8px;text-align:center;">
+              <div style="font-size:10px;color:var(--navy-mid);">최고</div>
+              <div style="font-size:16px;font-weight:700;color:#059669;" id="sr-max">-</div>
+            </div>
+          </div>
+          <!-- 랭킹 리스트 -->
+          <div id="sideRankingList" style="max-height:320px;overflow-y:auto;padding:10px 12px;">
+            <div style="text-align:center;padding:20px;color:var(--grey-mid);font-size:13px;">불러오는 중...</div>
+          </div>
+        </div>
+        </aside>
+      </div>
+    </section>
+
   </div>
 </div>
 
@@ -678,65 +792,80 @@
   };
 
   let currentRecipe = 1;
-  let currentMode = 'feedback';
+  let currentMode = 'generate';
   let history = [];
 
+  // 레시피 설명 박스 채우기 (prefix: 'info' = 평가 탭, 'genInfo' = 생성 탭)
+  function fillInfoBar(prefix, n) {
+    const r = RECIPES[n];
+    const bar = document.getElementById(prefix + 'Bar');
+    document.getElementById(prefix + 'Emoji').textContent = r.emoji;
+    document.getElementById(prefix + 'Title').textContent = r.title;
+    document.getElementById(prefix + 'Desc').innerHTML = r.desc;
+    document.getElementById(prefix + 'Tip').textContent = r.tip;
+    bar.style.borderLeftColor = r.color;
+    bar.classList.remove('swap'); void bar.offsetWidth; bar.classList.add('swap');
+  }
+
+  // 내 질문 평가받기: 레시피 선택 (가로 버튼)
   function selectRecipe(n) {
     currentRecipe = n;
     document.querySelectorAll('.recipe-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.recipe-btn')[n - 1].classList.add('active');
-    const r = RECIPES[n];
-    document.getElementById('infoEmoji').textContent = r.emoji;
-    document.getElementById('infoTitle').textContent = r.title;
-    document.getElementById('infoDesc').innerHTML = r.desc;
-    document.getElementById('infoTip').textContent = r.tip;
-    document.getElementById('infoBar').style.borderLeftColor = r.color;
+    fillInfoBar('info', n);
     hideResult();
   }
 
+  // 상단 탭으로 모드 전환 (각 탭의 작업 내용은 그대로 유지됨)
   function switchMode(mode) {
     currentMode = mode;
+    ['generate', 'prompt', 'feedback'].forEach(m => {
+      document.getElementById('panel-' + m).hidden = (m !== mode);
+      document.getElementById('tab-' + m).classList.toggle('active', m === mode);
+    });
+    if (mode === 'feedback') loadSideRanking();
+  }
 
-    // 모든 입력 영역 숨기기
-    document.getElementById('feedbackInputWrap').style.display = 'none';
-    document.getElementById('generateInputWrap').style.display = 'none';
-    document.getElementById('promptInputWrap').style.display = 'none';
-    document.getElementById('promptStepsWrap').style.display = 'none';
-    document.getElementById('topicRow').style.display = 'none';
-    document.getElementById('runBtn').style.display = 'inline-flex';
+  // ── ① 질문 생성하기 ──
+  let genRecipe = 1;
+  let genHasRun = false;
+  const genCache = {};
 
-    // 모드별 표시
-    if (mode === 'feedback') document.getElementById('feedbackInputWrap').style.display = 'block';
-    if (mode === 'generate') {
-      document.getElementById('generateInputWrap').style.display = 'block';
-      document.getElementById('topicRow').style.display = 'flex';
+  function selectGenRecipe(n) {
+    genRecipe = n;
+    fillInfoBar('genInfo', n);
+    [1, 2, 3, 4].forEach(i => document.getElementById('genOpt' + i).classList.toggle('selected', i === n));
+    // 한 번 생성한 뒤에는 레시피만 바꿔도 바로 그 레시피로 다시 생성
+    if (genHasRun && document.getElementById('genKeyword').value.trim()) runGenerate();
+  }
+
+  async function runGenerate() {
+    const subject = document.getElementById('genSubject').value.trim();
+    const unit = document.getElementById('genUnit').value.trim();
+    const keyword = document.getElementById('genKeyword').value.trim();
+    if (!keyword) { alert('핵심 키워드를 입력해주세요!'); document.getElementById('genKeyword').focus(); return; }
+
+    const topic = [subject && ('과목: ' + subject), unit && ('단원: ' + unit), '핵심 키워드: ' + keyword].filter(Boolean).join(' / ');
+    const recipe = genRecipe;
+    const key = recipe + '|' + topic;
+    const box = document.getElementById('genResult');
+    genHasRun = true;
+
+    if (genCache[key]) { box.innerHTML = renderGenerated(genCache[key], recipe); return; }
+
+    const btn = document.getElementById('genBtn');
+    btn.disabled = true;
+    box.innerHTML = '<div class="loading-wrap"><div class="spinner"></div><p>AI가 레시피 ' + recipe + '로 질문을 만들고 있어요…</p></div>';
+    try {
+      const res = await fetch(API_BASE + '/api/coach', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ recipe: recipe, mode: 'generate', topic: topic }) });
+      if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || '서버 오류'); }
+      const { result } = await res.json();
+      genCache[key] = result;
+      if (recipe === genRecipe) box.innerHTML = renderGenerated(result, recipe);
+    } catch (e) {
+      if (recipe === genRecipe) box.innerHTML = '<div style="padding:28px;color:#EF4444;text-align:center;font-size:18px;">⚠️ 오류가 발생했습니다.<br><small>' + e.message + '</small></div>';
     }
-    if (mode === 'prompt') document.getElementById('promptInputWrap').style.display = 'block';
-
-    document.getElementById('btnIcon').textContent = mode === 'feedback' ? '🔍' : mode === 'generate' ? '✨' : '🤖';
-    document.getElementById('btnText').textContent = mode === 'feedback' ? '질문 평가하기' : mode === 'generate' ? '질문 생성하기' : '프롬프트 분석하기';
-    document.querySelectorAll('.mode-radio label').forEach(l => l.classList.remove('selected'));
-    const labelId = mode === 'feedback' ? 'label-feedback' : mode === 'generate' ? 'label-generate' : 'label-prompt';
-    document.getElementById(labelId).classList.add('selected');
-    document.getElementById('infoBar').style.display = mode === 'prompt' ? 'none' : 'flex';
-    // 랭킹보드는 '내 질문 평가받기' 모드에서만 표시
-    document.getElementById('sideRankingBox').style.display = mode === 'feedback' ? 'block' : 'none';
-
-    // 프롬프트 모드 상태 초기화
-    if (mode !== 'prompt') {
-      promptStepData = {};
-      const promptInput = document.getElementById('promptInput');
-      if (promptInput) promptInput.value = '';
-      document.getElementById('promptCharCount').textContent = '0';
-      [1, 2, 3].forEach(i => {
-        const el = document.getElementById('trackStep' + i);
-        if (el) el.style.display = 'none';
-      });
-      const stepContent = document.getElementById('stepContent');
-      if (stepContent) stepContent.innerHTML = '';
-    }
-
-    hideResult();
+    btn.disabled = false;
   }
 
   function updateChar() {
@@ -793,40 +922,36 @@
   // ── 프롬프트 업그레이드 3단계 ──
   let promptStepData = {};
 
-  async function runAI() {
+  // ── ② AI 프롬프트 만들기: 시작 ──
+  async function startPrompt() {
+    const promptText = document.getElementById('promptInput').value.trim();
+    if (!promptText) { alert('문장을 먼저 입력해주세요!'); document.getElementById('promptInput').focus(); return; }
+    // 이전 진행 기록 지우고 새로 시작
+    [1, 2, 3].forEach(i => { const el = document.getElementById('trackStep' + i); if (el) el.style.display = 'none'; });
+    promptStepData = { original: promptText };
+    document.getElementById('originalPromptDisplay').textContent = promptText;
+    document.getElementById('promptStepsWrap').style.display = 'block';
+    const btn = document.getElementById('promptBtn');
+    btn.disabled = true;
+    await runPromptStep(1, promptText);
+    btn.disabled = false;
+  }
+
+  // ── ③ 내 질문 평가받기 ──
+  async function runFeedback() {
     const btn = document.getElementById('runBtn');
     const question = document.getElementById('questionInput').value.trim();
-    const topic = document.getElementById('topicInput').value.trim();
-    const promptEl = document.getElementById('promptInput');
-    const promptText = promptEl ? promptEl.value.trim() : '';
-
-    if (currentMode === 'feedback' && !question) { alert('질문을 먼저 입력해주세요!'); return; }
-    if (currentMode === 'generate' && !topic) { alert('주제나 키워드를 입력해주세요!'); return; }
-    if (currentMode === 'prompt' && !promptText) { alert('문장을 먼저 입력해주세요!'); return; }
-
+    if (!question) { alert('질문을 먼저 입력해주세요!'); document.getElementById('questionInput').focus(); return; }
     btn.disabled = true;
-
-    if (currentMode === 'prompt') {
-      promptStepData = { original: promptText };
-      document.getElementById('promptInputWrap').style.display = 'none';
-      document.getElementById('promptStepsWrap').style.display = 'block';
-      document.getElementById('originalPromptDisplay').textContent = promptText;
-      btn.style.display = 'none';
-      await runPromptStep(1, promptText);
-    } else {
-      showLoading();
-      try {
-        const body = { recipe: currentRecipe, mode: currentMode };
-        if (currentMode === 'feedback') body.question = question;
-        else body.topic = topic;
-        const res = await fetch(API_BASE + '/api/coach', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-        if (!res.ok) { const err = await res.json(); throw new Error(err.error || '서버 오류'); }
-        const { result } = await res.json();
-        if (currentMode === 'feedback') { renderFeedback(result, question); addHistory(currentRecipe, question, result.score); }
-        else { renderGenerated(result, topic); addHistory(currentRecipe, '[생성] ' + topic, null); }
-      } catch (e) {
-        document.getElementById('resultContent').innerHTML = '<div style="padding:28px;color:#EF4444;text-align:center;font-size:18px;">⚠️ 오류가 발생했습니다.<br><small>' + e.message + '</small></div>';
-      }
+    showLoading();
+    try {
+      const res = await fetch(API_BASE + '/api/coach', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ recipe: currentRecipe, mode: 'feedback', question: question }) });
+      if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || '서버 오류'); }
+      const { result } = await res.json();
+      renderFeedback(result, question);
+      addHistory(currentRecipe, question, result.score);
+    } catch (e) {
+      document.getElementById('resultContent').innerHTML = '<div style="padding:28px;color:#EF4444;text-align:center;font-size:18px;">⚠️ 오류가 발생했습니다.<br><small>' + e.message + '</small></div>';
     }
     btn.disabled = false;
   }
@@ -1012,17 +1137,14 @@
   }
 
   function resetPromptMode() {
-    document.getElementById('promptInputWrap').style.display = 'block';
     document.getElementById('promptStepsWrap').style.display = 'none';
+    document.getElementById('stepContent').innerHTML = '';
     document.getElementById('promptInput').value = '';
     document.getElementById('promptCharCount').textContent = '0';
-    document.getElementById('runBtn').style.display = 'inline-flex';
-    // 추적 UI 초기화
-    [1, 2, 3].forEach(i => {
-      const el = document.getElementById('trackStep' + i);
-      if (el) el.style.display = 'none';
-    });
+    [1, 2, 3].forEach(i => { const el = document.getElementById('trackStep' + i); if (el) el.style.display = 'none'; });
     promptStepData = {};
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.getElementById('promptInput').focus();
   }
 
   function renderFeedback(d, q) {
@@ -1052,7 +1174,7 @@
       '<div style="margin-top:14px;padding:14px 18px;background:var(--yellow-light);border-radius:12px;font-size:18px;color:#7A6000;">💬 ' + d.tip + '</div>' +
       '<div style="margin-top:20px;padding:24px 26px;background:linear-gradient(135deg,#FFFBE0,#FFF3C4);border:3px solid var(--yellow);border-radius:16px;box-shadow:0 4px 18px rgba(255,214,0,0.25);">' +
       '<div style="font-size:23px;font-weight:900;color:var(--navy);margin-bottom:6px;">🏆 내 질문을 랭킹 보드에 올려보세요!</div>' +
-      '<div style="font-size:16px;color:#7A6000;margin-bottom:14px;">학번을 입력하고 등록하면 왼쪽 랭킹에 바로 나타나요.</div>' +
+      '<div style="font-size:16px;color:#7A6000;margin-bottom:14px;">학번을 입력하고 등록하면 질문 랭킹에 바로 나타나요.</div>' +
       '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">' +
       '<input id="studentIdInput" type="text" inputmode="numeric" maxlength="4" placeholder="학번 4자리 (예: 1203)" ' +
       'oninput="this.value=this.value.replace(/[^0-9]/g,\'\')" onkeydown="if(event.key===\'Enter\')saveToRanking()" ' +
@@ -1064,22 +1186,22 @@
     lastFeedback = { question: q, score: d.score, grade: d.grade, recipe: currentRecipe };
   }
 
-  function renderGenerated(d, topic) {
+  function renderGenerated(d, recipe) {
     let html = '<div class="result-header"><h3>✨ 생성된 질문들</h3></div>';
-    if (currentRecipe === 1 && d.questions) {
+    if (recipe === 1 && d.questions) {
       html += '<div class="feedback-section fb-generated"><div class="fb-head">🔀 레시피 1 · 5W1H+if 질문 조합</div><div class="fb-body">' + d.questions.map(q => '<div class="question-item"><span class="q-badge" style="background:var(--r1-light);color:var(--r1);">' + q.type + '</span><span class="q-text">' + q.q + '</span></div>').join('') + '</div></div>';
     }
-    if (currentRecipe === 2 && d.whyChain) {
+    if (recipe === 2 && d.whyChain) {
       html += '<div class="feedback-section fb-generated"><div class="fb-head">🔎 레시피 2 · 5-Why 연쇄 질문</div><div class="fb-body"><div class="question-item"><span class="q-badge" style="background:#EDE9FE;color:#7C3AED;">출발</span><span class="q-text">' + d.startQuestion + '</span></div>' + d.whyChain.map(w => '<div class="question-item"><span class="q-badge" style="background:var(--r2-light);color:var(--r2);">Why' + w.step + '</span><span class="q-text">' + w.q + '</span></div>').join('') + '</div></div><div style="padding:14px 18px;background:var(--yellow-light);border-radius:12px;font-size:18px;color:#7A6000;margin-top:10px;">💡 ' + d.insight + '</div>';
     }
-    if (currentRecipe === 3 && d.questions) {
+    if (recipe === 3 && d.questions) {
       html += '<div class="feedback-section fb-generated"><div class="fb-head">⊞ 레시피 3 · Q-Matrix 질문 조합</div><div class="fb-body">' + d.questions.map(q => '<div class="question-item"><span class="q-badge" style="background:var(--navy);color:white;">' + q.row + '</span><span class="q-badge" style="background:var(--grey-light);color:var(--navy-mid);">' + q.col + '</span><span class="q-text">' + q.q + '</span></div>').join('') + '</div></div>';
     }
-    if (currentRecipe === 4 && d.closedExamples) {
+    if (recipe === 4 && d.closedExamples) {
       html += '<div class="feedback-section fb-generated"><div class="fb-head">🔓 레시피 4 · 닫힌 → 열린 질문 전환</div><div class="fb-body">' + d.closedExamples.map(ex => '<div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--grey-light);"><div style="font-size:16px;color:#EF4444;margin-bottom:7px;">🔒 닫힌: ' + ex.closed + '</div><div style="font-size:18px;color:#059669;font-weight:500;">🔓 열린: ' + ex.open + '</div></div>').join('') + '<div style="padding:14px;background:var(--mint-light);border-radius:12px;font-size:18px;font-weight:700;color:var(--mint);">⭐ 최고의 열린 질문: ' + d.bestQuestion + '</div></div></div>';
     }
     if (d.tip) html += '<div style="padding:14px 18px;background:var(--yellow-light);border-radius:12px;font-size:18px;color:#7A6000;margin-top:10px;">💡 ' + d.tip + '</div>';
-    document.getElementById('resultContent').innerHTML = html;
+    return html;
   }
 
   // ── 사이드바 랭킹 ────────────────────────────────
@@ -1158,7 +1280,9 @@
     }).join('');
   }
 
-  // 페이지 로드시 자동으로 랭킹 불러오기
+  // 페이지 로드시: 질문 생성 탭 레시피 1 설명 표시 + 랭킹 불러오기
+  fillInfoBar('genInfo', 1);
+  switchMode('generate');
   loadSideRanking();
   let rankData = [];
   let rankFilter = 'all';
