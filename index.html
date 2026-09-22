@@ -424,6 +424,20 @@
   .gen-opt.selected.r3 { background: var(--r3-light); border-color: var(--r3); }
   .gen-opt.selected.r4 { background: var(--r4-light); border-color: var(--r4); }
   .gen-recipes .btn-primary { justify-content: center; margin-top: 8px; }
+  /* 노트북: 생성 버튼을 핵심 키워드 입력칸 오른쪽 안에 배치 */
+  .kw-wrap { position: relative; }
+  .kw-wrap input { padding-right: 178px; }
+  .gen-btn-inline {
+    position: absolute; top: 6px; right: 6px; bottom: 6px;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 0 18px; border: none; border-radius: 9px;
+    background: var(--mint); color: var(--white);
+    font-family: inherit; font-size: 16px; font-weight: 700;
+    white-space: nowrap; cursor: pointer; transition: background 0.15s;
+  }
+  .gen-btn-inline:hover { background: #0C9490; }
+  .gen-btn-inline:disabled { background: var(--grey-mid); cursor: not-allowed; }
+  .gen-btn-bottom { display: none; }
   .gen-right { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
   .gen-result { border: 2px solid #E3EAEA; border-radius: 16px; padding: 24px 26px; min-height: 420px; }
   .gen-empty { height: 100%; min-height: 370px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--navy-mid); font-size: 20px; font-weight: 700; text-align: center; }
@@ -473,6 +487,9 @@
     .gen-body { grid-template-columns: 1fr; gap: 16px; }
     .gen-recipes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
     .gen-recipes-title, .gen-recipes .btn-primary { grid-column: 1 / -1; }
+    .gen-btn-inline { display: none; }
+    .kw-wrap input { padding-right: 14px; }
+    .gen-btn-bottom { display: inline-flex; }
     .gen-opt { padding: 10px 8px 10px 14px; gap: 8px; }
     .gen-opt input { width: 17px; height: 17px; }
     .gen-opt .rtitle { font-size: 13px; }
@@ -551,7 +568,7 @@
       <div class="gen-inputs">
         <div class="gen-field"><label for="genSubject">📚 과목</label><input id="genSubject" type="text" placeholder="예: 과학" maxlength="30" onkeydown="if(event.key==='Enter')runGenerate()"></div>
         <div class="gen-field"><label for="genUnit">📖 단원명</label><input id="genUnit" type="text" placeholder="예: 물질의 상태 변화" maxlength="50" onkeydown="if(event.key==='Enter')runGenerate()"></div>
-        <div class="gen-field"><label for="genKeyword">🔑 핵심 키워드 <span class="req">*필수</span></label><input id="genKeyword" type="text" placeholder="예: 기화, 수증기" maxlength="50" onkeydown="if(event.key==='Enter')runGenerate()"></div>
+        <div class="gen-field"><label for="genKeyword">🔑 핵심 키워드 <span class="req">*필수</span></label><div class="kw-wrap"><input id="genKeyword" type="text" placeholder="예: 기화, 수증기" maxlength="50" onkeydown="if(event.key==='Enter')runGenerate()"><button class="gen-btn gen-btn-inline" onclick="runGenerate()">✨ 질문 생성하기</button></div></div>
       </div>
       <p class="gen-hint">* 위 빈칸을 입력하면 AI가 레시피에 맞는 질문을 생성해드려요.</p>
 
@@ -574,7 +591,7 @@
               <input type="radio" name="genRecipe" value="4" onchange="selectGenRecipe(4)">
               <span class="gen-opt-text"><span class="rnum">RECIPE 4</span><span class="rtitle">열린 질문 만들기</span><span class="rdesc">닫힌 → 열린 질문으로 전환</span></span>
             </label>
-          <button class="btn-primary" id="genBtn" onclick="runGenerate()">✨ 질문 생성하기</button>
+          <button class="btn-primary gen-btn gen-btn-bottom" id="genBtn" onclick="runGenerate()">✨ 질문 생성하기</button>
         </div>
         <div class="gen-right">
           <!-- 레시피 설명 (질문 생성 탭) -->
@@ -853,8 +870,8 @@
 
     if (genCache[key]) { box.innerHTML = renderGenerated(genCache[key], recipe); return; }
 
-    const btn = document.getElementById('genBtn');
-    btn.disabled = true;
+    const btns = document.querySelectorAll('.gen-btn');
+    btns.forEach(b => b.disabled = true);
     box.innerHTML = '<div class="loading-wrap"><div class="spinner"></div><p>AI가 레시피 ' + recipe + '로 질문을 만들고 있어요…</p></div>';
     try {
       const res = await fetch(API_BASE + '/api/coach', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ recipe: recipe, mode: 'generate', topic: topic }) });
@@ -865,7 +882,7 @@
     } catch (e) {
       if (recipe === genRecipe) box.innerHTML = '<div style="padding:28px;color:#EF4444;text-align:center;font-size:18px;">⚠️ 오류가 발생했습니다.<br><small>' + e.message + '</small></div>';
     }
-    btn.disabled = false;
+    btns.forEach(b => b.disabled = false);
   }
 
   function updateChar() {
