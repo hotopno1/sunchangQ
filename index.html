@@ -192,7 +192,15 @@
   }
   .recipe-info-bar .emoji { font-size: 40px; flex-shrink: 0; }
   .recipe-info-bar h2 { font-size: 23px; font-weight: 700; color: var(--navy); margin-bottom: 7px; }
-  .recipe-info-bar p { font-size: 17px; color: var(--navy-mid); line-height: 1.75; }
+  .recipe-info-bar p, #infoDesc { font-size: 17px; color: var(--navy-mid); line-height: 1.75; }
+  .qm-wrap { margin-top: 14px; overflow-x: auto; }
+  .qm-topic { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+  .qm-table { display: grid; grid-template-columns: 76px repeat(3, minmax(150px, 1fr)); gap: 6px; min-width: 560px; }
+  .qm-h { font-size: 15px; font-weight: 700; text-align: center; padding: 8px; border-radius: 8px; background: var(--navy); color: white; }
+  .qm-row { font-size: 15px; font-weight: 800; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: var(--navy-mid); color: white; }
+  .qm-cell { font-size: 14px; line-height: 1.55; padding: 10px 12px; border-radius: 8px; color: var(--navy); }
+  .qm-l1 { background: #EFF6FF; } .qm-l2 { background: #F3EEFF; } .qm-l3 { background: #FFF1E6; }
+  .qm-level { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: var(--navy-mid); margin-top: 8px; min-width: 560px; }
   .recipe-info-bar .tip {
     margin-top: 10px;
     font-size: 15px;
@@ -469,7 +477,7 @@
       <div class="emoji" id="infoEmoji">🔀</div>
       <div>
         <h2 id="infoTitle">레시피 1 · 5W1H 변형하기</h2>
-        <p id="infoDesc">who / when / where / what / why / how 중 하나를 골라, <strong>"만약에(if)"</strong>를 추가해 상상력 질문으로 바꾸는 기법입니다.</p>
+        <div id="infoDesc">who / when / where / what / why / how 중 하나를 골라, <strong>"만약에(if)"</strong>를 추가해 상상력 질문으로 바꾸는 기법입니다.</div>
         <span class="tip" id="infoTip">💡 예: "이순신 장군은 누구인가요?" → "만약 이순신 장군에게 거북선이 없었다면 전쟁은 어떻게 달라졌을까요?"</span>
       </div>
     </div>
@@ -594,7 +602,7 @@
   const RECIPES = {
     1: { emoji: '🔀', color: 'var(--r1)', title: '레시피 1 · 5W1H 변형하기', desc: 'who / when / where / what / why / how 중 하나를 골라, <strong>"만약에(if)"</strong>를 추가해 상상력 질문으로 바꾸는 기법입니다.', tip: '💡 예: "이순신 장군은 누구인가요?" → "만약 이순신 장군에게 거북선이 없었다면 전쟁은 어떻게 달라졌을까요?"' },
     2: { emoji: '🔎', color: 'var(--r2)', title: '레시피 2 · 5-Why 기법', desc: '현상의 표면이 아니라 <strong>본질적 이유</strong>를 파고들어 봅니다. "왜?"를 5번 반복하며 더 깊은 질문으로 나아가는 기법입니다.', tip: '💡 예: "왜 친구들의 소식이 궁금할까?" → "왜 불안감을 느낄까?" → "왜 자꾸 SNS에 접속할까?" …' },
-    3: { emoji: '⊞', color: 'var(--r3)', title: '레시피 3 · Q-Matrix 기법', desc: '<strong>가로축(사실/예측·상상/가치·판단)</strong> × <strong>세로축(WHAT/WHO/HOW/WHY)</strong>를 조합해 수준 높은 질문을 만드는 기법입니다.', tip: '💡 표에서 단어 두 개만 골라봐, 오른쪽 아래로 갈수록 사고력 점수는 올라가!' },
+    3: { emoji: '⊞', color: 'var(--r3)', title: '레시피 3 · Q-Matrix 기법', desc: '<strong>가로축(사실/예측·상상/가치·판단)</strong> × <strong>세로축(WHAT/WHO/HOW/WHY)</strong>를 조합해 수준 높은 질문을 만드는 기법입니다.' + '<div class="qm-wrap"><div class="qm-topic">📱 예시 주제: 스마트폰 — 같은 주제로도 이렇게 다른 질문을 만들 수 있어요</div>' + '<div class="qm-table">' + '<div></div><div class="qm-h">사실</div><div class="qm-h">예측·상상</div><div class="qm-h">가치·판단</div>' + '<div class="qm-row">WHAT</div><div class="qm-cell qm-l1">스마트폰에는 어떤 기능이 있을까?</div><div class="qm-cell qm-l2">10년 뒤 스마트폰은 어떤 모습일까?</div><div class="qm-cell qm-l3">스마트폰이 우리에게 주는 가장 큰 가치는 무엇일까?</div>' + '<div class="qm-row">WHO</div><div class="qm-cell qm-l1">스마트폰을 처음 만든 사람은 누구일까?</div><div class="qm-cell qm-l2">스마트폰이 사라지면 누가 가장 불편해질까?</div><div class="qm-cell qm-l3">학교의 스마트폰 규칙은 누가 정하는 것이 옳을까?</div>' + '<div class="qm-row">HOW</div><div class="qm-cell qm-l1">스마트폰은 어떻게 전화를 연결할까?</div><div class="qm-cell qm-l2">스마트폰 없이 일주일을 산다면 어떻게 될까?</div><div class="qm-cell qm-l3">스마트폰을 어떻게 사용하는 것이 바람직할까?</div>' + '<div class="qm-row">WHY</div><div class="qm-cell qm-l1">사람들은 왜 스마트폰을 사용할까?</div><div class="qm-cell qm-l2">스마트폰이 없으면 왜 불안한 마음이 들까?</div><div class="qm-cell qm-l3">왜 스마트폰 사용 시간을 스스로 조절해야 할까?</div>' + '</div><div class="qm-level"><span>↖ 기초 (답이 정해진 질문)</span><span>심화 (생각이 깊어지는 질문) ↘</span></div></div>', tip: '💡 표에서 단어 두 개만 골라봐, 오른쪽 아래로 갈수록 사고력 점수는 올라가!' },
     4: { emoji: '🔓', color: 'var(--r4)', title: '레시피 4 · 열린 질문 만들기', desc: '닫힌 자물쇠(네/아니오) 질문을 열린 열쇠(다양한 생각) 질문으로 바꾸는 기법입니다. <strong>정답이 하나가 아닌 질문</strong>을 만들어보세요.', tip: '💡 "세종대왕은 백성을 아꼈나요?" → "세종대왕이 한글을 창제할 때 가장 중요하게 생각한 가치는 무엇이며 오늘날 우리에게 어떤 의미가 있을까요?"' }
   };
 
@@ -969,15 +977,16 @@
       '<div class="feedback-section fb-improve"><div class="fb-head">💡 이렇게 발전시켜봐요</div><div class="fb-body">' + d.improve + '</div></div>' +
       '<div class="feedback-section fb-revised"><div class="fb-head">✨ 개선된 질문 예시</div><div class="fb-body">' + d.revised + '</div></div>' +
       '<div style="margin-top:14px;padding:14px 18px;background:var(--yellow-light);border-radius:12px;font-size:18px;color:#7A6000;">💬 ' + d.tip + '</div>' +
-      '<div style="margin-top:14px;padding:16px 18px;background:#F4F8F8;border-radius:12px;">' +
-      '<div style="font-size:15px;font-weight:700;color:var(--navy);margin-bottom:10px;">🏆 랭킹 보드에 등록하기</div>' +
+      '<div style="margin-top:20px;padding:24px 26px;background:linear-gradient(135deg,#FFFBE0,#FFF3C4);border:3px solid var(--yellow);border-radius:16px;box-shadow:0 4px 18px rgba(255,214,0,0.25);">' +
+      '<div style="font-size:23px;font-weight:900;color:var(--navy);margin-bottom:6px;">🏆 내 질문을 랭킹 보드에 올려보세요!</div>' +
+      '<div style="font-size:16px;color:#7A6000;margin-bottom:14px;">학번을 입력하고 등록하면 왼쪽 랭킹에 바로 나타나요.</div>' +
       '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">' +
       '<input id="studentIdInput" type="text" inputmode="numeric" maxlength="4" placeholder="학번 4자리 (예: 1203)" ' +
       'oninput="this.value=this.value.replace(/[^0-9]/g,\'\')" onkeydown="if(event.key===\'Enter\')saveToRanking()" ' +
-      'style="flex:1;min-width:180px;padding:12px 14px;border:2px solid var(--grey-mid);border-radius:10px;font-family:inherit;font-size:17px;letter-spacing:2px;outline:none;">' +
-      '<button id="rankSaveBtn" onclick="saveToRanking()" style="padding:12px 24px;background:var(--navy);color:white;border:none;border-radius:10px;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;">등록하기</button>' +
+      'style="flex:1;min-width:200px;padding:16px 18px;border:2.5px solid #E6C200;border-radius:12px;font-family:inherit;font-size:22px;font-weight:700;letter-spacing:4px;outline:none;background:white;">' +
+      '<button id="rankSaveBtn" onclick="saveToRanking()" style="padding:16px 34px;background:var(--navy);color:var(--yellow);border:none;border-radius:12px;font-family:inherit;font-size:20px;font-weight:900;cursor:pointer;">🏆 등록하기</button>' +
       '</div>' +
-      '<div style="font-size:13px;color:var(--navy-mid);margin-top:8px;">학번은 선생님만 확인할 수 있고, 랭킹 보드에는 질문과 점수만 공개돼요.</div>' +
+      '<div style="font-size:15px;color:var(--navy-mid);margin-top:12px;">🔒 학번은 선생님만 확인할 수 있고, 랭킹 보드에는 질문과 점수만 공개돼요.</div>' +
       '</div>';
     lastFeedback = { question: q, score: d.score, grade: d.grade, recipe: currentRecipe };
   }
@@ -1109,7 +1118,7 @@
     } catch (e) {
       alert('오류가 발생했어요: ' + e.message);
       btn.disabled = false;
-      btn.textContent = '등록하기';
+      btn.textContent = '🏆 등록하기';
     }
   }
 
