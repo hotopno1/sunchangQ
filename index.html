@@ -969,7 +969,17 @@
       '<div class="feedback-section fb-improve"><div class="fb-head">💡 이렇게 발전시켜봐요</div><div class="fb-body">' + d.improve + '</div></div>' +
       '<div class="feedback-section fb-revised"><div class="fb-head">✨ 개선된 질문 예시</div><div class="fb-body">' + d.revised + '</div></div>' +
       '<div style="margin-top:14px;padding:14px 18px;background:var(--yellow-light);border-radius:12px;font-size:18px;color:#7A6000;">💬 ' + d.tip + '</div>' +
-      '<button onclick="saveToRanking(\'' + q.replace(/'/g,"\\'") + '\',' + d.score + ',\'' + d.grade + '\',' + currentRecipe + ')" style="margin-top:14px;width:100%;padding:14px;background:var(--navy);color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;">🏆 랭킹 보드에 등록하기</button>';
+      '<div style="margin-top:14px;padding:16px 18px;background:#F4F8F8;border-radius:12px;">' +
+      '<div style="font-size:15px;font-weight:700;color:var(--navy);margin-bottom:10px;">🏆 랭킹 보드에 등록하기</div>' +
+      '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">' +
+      '<input id="studentIdInput" type="text" inputmode="numeric" maxlength="4" placeholder="학번 4자리 (예: 1203)" ' +
+      'oninput="this.value=this.value.replace(/[^0-9]/g,\'\')" onkeydown="if(event.key===\'Enter\')saveToRanking()" ' +
+      'style="flex:1;min-width:180px;padding:12px 14px;border:2px solid var(--grey-mid);border-radius:10px;font-family:inherit;font-size:17px;letter-spacing:2px;outline:none;">' +
+      '<button id="rankSaveBtn" onclick="saveToRanking()" style="padding:12px 24px;background:var(--navy);color:white;border:none;border-radius:10px;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;">등록하기</button>' +
+      '</div>' +
+      '<div style="font-size:13px;color:var(--navy-mid);margin-top:8px;">학번은 선생님만 확인할 수 있고, 랭킹 보드에는 질문과 점수만 공개돼요.</div>' +
+      '</div>';
+    lastFeedback = { question: q, score: d.score, grade: d.grade, recipe: currentRecipe };
   }
 
   function renderGenerated(d, topic) {
@@ -1071,18 +1081,35 @@
   let rankData = [];
   let rankFilter = 'all';
 
-  async function saveToRanking(question, score, grade, recipe) {
+  let lastFeedback = null;
+
+  async function saveToRanking() {
+    const input = document.getElementById('studentIdInput');
+    const btn = document.getElementById('rankSaveBtn');
+    const studentId = input ? input.value.trim() : '';
+    if (!/^\d{4}$/.test(studentId)) {
+      alert('학번 4자리 숫자를 입력해주세요! (예: 1203)');
+      if (input) input.focus();
+      return;
+    }
+    if (!lastFeedback) { alert('먼저 질문을 평가받아주세요!'); return; }
+    btn.disabled = true;
+    btn.textContent = '등록 중...';
     try {
       const res = await fetch(API_BASE + '/api/ranking', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question, score, grade, recipe, sheetUrl: SHEET_API })
+        body: JSON.stringify(Object.assign({}, lastFeedback, { studentId: studentId, sheetUrl: SHEET_API }))
       });
-      if (!res.ok) throw new Error('서버 오류');
-      alert('🎉 랭킹 보드에 등록됐어요!');
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json.error || '서버 오류');
+      btn.textContent = '✅ 등록 완료';
+      input.disabled = true;
       loadSideRanking();
     } catch (e) {
       alert('오류가 발생했어요: ' + e.message);
+      btn.disabled = false;
+      btn.textContent = '등록하기';
     }
   }
 
