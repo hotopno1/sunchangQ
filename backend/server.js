@@ -114,8 +114,11 @@ app.get('/api/ranking', async function(req, res) {
 app.post('/api/ranking', async function(req, res) {
   try {
     const sheetUrl = SHEET_URL || req.body.sheetUrl;
-    const { question, score, grade, recipe } = req.body;
-    const data = await httpsPost(sheetUrl, { question, score, grade, recipe });
+    const { question, score, grade, recipe, studentId } = req.body;
+    if (!/^\d{4}$/.test(String(studentId || ''))) {
+      return res.status(400).json({ error: '학번 4자리 숫자를 입력해주세요.' });
+    }
+    const data = await httpsPost(sheetUrl, { question, score, grade, recipe, studentId: String(studentId) });
     res.json(data);
   } catch (err) {
     console.error('랭킹 저장 오류:', err.message);
