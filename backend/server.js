@@ -13,14 +13,21 @@ app.use(express.json());
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const SHEET_URL = process.env.SHEET_URL || '';
 
-function httpsGet(url) {
+function httpsGet(url, depth) {
+  depth = depth || 0;
   return new Promise((resolve, reject) => {
+    if (depth > 5) return reject(new Error('리다이렉트가 너무 많습니다'));
     https.get(url, (res) => {
+      // Google Apps Script는 결과를 다른 주소로 한 번 넘겨서 줌 → 따라가기
+      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+        res.resume();
+        return resolve(httpsGet(res.headers.location, depth + 1));
+      }
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
         try { resolve(JSON.parse(data)); }
-        catch (e) { reject(new Error('JSON 파싱 오류')); }
+        catch (e) { reject(new Error('시트 응답을 읽을 수 없어요: ' + data.slice(0, 200))); }
       });
     }).on('error', reject);
   });
@@ -40,11 +47,16 @@ function httpsPost(url, body) {
       }
     };
     const req = https.request(options, (res) => {
+      // 저장은 이미 끝났고, 결과 주소로 넘겨줌 → GET으로 결과 확인
+      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+        res.resume();
+        return httpsGet(res.headers.location).then(resolve).catch(() => resolve({ success: true }));
+      }
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
         try { resolve(JSON.parse(data)); }
-        catch (e) { resolve({ success: true }); }
+        catch (e) { reject(new Error('시트 저장 오류: ' + data.slice(0, 200))); }
       });
     });
     req.on('error', reject);
