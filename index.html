@@ -444,6 +444,7 @@
   .gen-empty span { font-size: 15px; font-weight: 400; color: var(--grey-mid); }
 
   /* ② AI 프롬프트 만들기 */
+  .prompt-inputs { grid-template-columns: repeat(2, 1fr); }
   .prompt-row { display: flex; gap: 18px; align-items: flex-start; margin-bottom: 26px; }
   .prompt-input-col { flex: 1; min-width: 0; }
   .prompt-input-col textarea { min-height: 120px; }
@@ -480,7 +481,7 @@
     .tab-panel { padding: 18px 14px; border-radius: 0 0 14px 14px; min-height: 0; }
     .panel-label { font-size: 16px; }
 
-    .gen-inputs { grid-template-columns: 1fr; gap: 12px; }
+    .gen-inputs, .prompt-inputs { grid-template-columns: 1fr; gap: 12px; }
     .gen-field label { font-size: 15px; }
     .gen-field input { font-size: 16px; padding: 12px 14px; }
     .gen-hint { font-size: 14px; margin: 10px 0 16px; }
@@ -612,10 +613,15 @@
 
     <!-- ② AI 프롬프트 만들기 -->
     <section class="panel" id="panel-prompt" hidden>
+      <div class="gen-inputs prompt-inputs">
+        <div class="gen-field"><label for="promptSubject">📚 과목</label><input id="promptSubject" type="text" placeholder="예: 과학" maxlength="30" onkeydown="if(event.key==='Enter')document.getElementById('promptKeyword').focus()"></div>
+        <div class="gen-field"><label for="promptKeyword">🔑 핵심 키워드 <span class="req">*필수</span></label><input id="promptKeyword" type="text" placeholder="예: 기화, 수증기" maxlength="50" onkeydown="if(event.key==='Enter')document.getElementById('promptInput').focus()"></div>
+      </div>
+      <p class="gen-hint">* 과목과 핵심 키워드를 입력하면 AI가 그 주제에 맞게 문장을 다듬어줘요.</p>
       <label class="panel-label" for="promptInput">🤖 AI에게 보내고 싶은 문장을 입력하세요</label>
       <div class="prompt-row">
         <div class="prompt-input-col">
-          <textarea id="promptInput" placeholder="예: 좋은 책 추천해줘 / 주말에 뭐 할지 알려줘 / 동물은 뭐가 있어?" maxlength="300" oninput="updatePromptChar()"></textarea>
+          <textarea id="promptInput" placeholder="예: 기화에 대해 알려줘 / 수증기는 뭐야? / 물이 끓는 거 설명해줘" maxlength="300" oninput="updatePromptChar()"></textarea>
           <div class="char-count"><span id="promptCharCount">0</span> / 300</div>
         </div>
         <button class="btn-primary" id="promptBtn" onclick="startPrompt()">🤖 프롬프트 분석하기</button>
@@ -945,7 +951,10 @@
     if (!promptText) { alert('문장을 먼저 입력해주세요!'); document.getElementById('promptInput').focus(); return; }
     // 이전 진행 기록 지우고 새로 시작
     [1, 2, 3].forEach(i => { const el = document.getElementById('trackStep' + i); if (el) el.style.display = 'none'; });
-    promptStepData = { original: promptText };
+    const pSubject = document.getElementById('promptSubject').value.trim();
+    const pKeyword = document.getElementById('promptKeyword').value.trim();
+    if (!pKeyword) { alert('핵심 키워드를 입력해주세요!'); document.getElementById('promptKeyword').focus(); return; }
+    promptStepData = { original: promptText, context: [pSubject && ('과목: ' + pSubject), '핵심 키워드: ' + pKeyword].filter(Boolean).join(' / ') };
     document.getElementById('originalPromptDisplay').textContent = promptText;
     document.getElementById('promptStepsWrap').style.display = 'block';
     const btn = document.getElementById('promptBtn');
@@ -978,10 +987,11 @@
     updateStepBar(step);
     stepContent.innerHTML = '<div class="loading-wrap"><div class="spinner"></div><p>AI가 ' + step + '단계를 준비 중이에요…</p></div>';
 
+    const ctx = promptStepData.context ? '\n\n[수업 맥락] ' + promptStepData.context + '\n제안하는 문장은 반드시 이 과목과 핵심 키워드에 관련된 내용이 되도록 다듬으세요. 학생이 이 주제를 공부할 때 AI에게 실제로 보낼 만한 문장이어야 합니다.' : '';
     const stepPrompts = {
-      1: '당신은 AI 프롬프트 교육 코치입니다. 한국 중학생 대상입니다.\n\n학생의 원래 문장: "' + inputSentence + '"\n\n[1단계: 명확성 높이기]\n이 문장에서 대상/범위/종류가 불분명한 부분을 명확하게 만든 버전 3개를 제안하세요. 각 버전에서 명확성을 높인 핵심 구절도 알려주세요.\n\nJSON으로만 응답:\n{"explanation":"명확성이란 대상과 범위를 분명히 하는 것입니다. 예시 1문장","problem":"원래 문장에서 불명확한 점 1문장","options":[{"text":"명확하게 바꾼 버전1","highlight":"이 버전에서 명확성을 높인 핵심 구절"},{"text":"명확하게 바꾼 버전2","highlight":"이 버전에서 명확성을 높인 핵심 구절"},{"text":"명확하게 바꾼 버전3","highlight":"이 버전에서 명확성을 높인 핵심 구절"}]}',
-      2: '당신은 AI 프롬프트 교육 코치입니다. 한국 중학생 대상입니다.\n\n1단계 완성 문장: "' + inputSentence + '"\n\n[2단계: 구체성 높이기]\n이 문장에 숫자, 조건, 형식 등을 추가해 더 구체적으로 만든 버전 3개를 제안하세요. 각 버전에서 구체성을 높인 핵심 구절도 알려주세요.\n\nJSON으로만 응답:\n{"explanation":"구체성이란 원하는 내용을 세밀하게 표현하는 것입니다. 예시 1문장","problem":"현재 문장에서 더 구체화할 수 있는 점 1문장","options":[{"text":"구체적으로 바꾼 버전1","highlight":"이 버전에서 구체성을 높인 핵심 구절"},{"text":"구체적으로 바꾼 버전2","highlight":"이 버전에서 구체성을 높인 핵심 구절"},{"text":"구체적으로 바꾼 버전3","highlight":"이 버전에서 구체성을 높인 핵심 구절"}]}',
-      3: '당신은 AI 프롬프트 교육 코치입니다. 한국 중학생 대상입니다.\n\n2단계 완성 문장: "' + inputSentence + '"\n\n[3단계: 목적 추가하기]\n이 문장에 목적(왜 필요한지, 어떻게 사용할지)을 추가한 버전 3개를 제안하세요.\n\n⚠️ 중요: 목적은 반드시 문장의 맨 앞에 배치하세요. 형식: "[목적을 나타내는 구절] + 기존 문장" 순서로 작성하세요.\n예시: "학교 발표 준비를 위해, ..." 또는 "친구들과 추억을 남기려고, ..." 처럼 목적이 앞에 와야 합니다.\n\nJSON으로만 응답:\n{"explanation":"목적을 문장 앞에 추가하면 AI가 왜 이 정보가 필요한지 바로 파악할 수 있습니다.","problem":"현재 문장에 목적이 빠진 이유 1문장","options":[{"text":"[목적구절] + 기존문장 형태로 작성한 버전1","highlight":"맨 앞에 추가된 목적 구절"},{"text":"[목적구절] + 기존문장 형태로 작성한 버전2","highlight":"맨 앞에 추가된 목적 구절"},{"text":"[목적구절] + 기존문장 형태로 작성한 버전3","highlight":"맨 앞에 추가된 목적 구절"}]}'
+      1: '당신은 AI 프롬프트 교육 코치입니다. 한국 중학생 대상입니다.\n\n학생의 원래 문장: "' + inputSentence + '"' + ctx + '\n\n[1단계: 명확성 높이기]\n이 문장에서 대상/범위/종류가 불분명한 부분을 명확하게 만든 버전 3개를 제안하세요. 각 버전에서 명확성을 높인 핵심 구절도 알려주세요.\n\nJSON으로만 응답:\n{"explanation":"명확성이란 대상과 범위를 분명히 하는 것입니다. 예시 1문장","problem":"원래 문장에서 불명확한 점 1문장","options":[{"text":"명확하게 바꾼 버전1","highlight":"이 버전에서 명확성을 높인 핵심 구절"},{"text":"명확하게 바꾼 버전2","highlight":"이 버전에서 명확성을 높인 핵심 구절"},{"text":"명확하게 바꾼 버전3","highlight":"이 버전에서 명확성을 높인 핵심 구절"}]}',
+      2: '당신은 AI 프롬프트 교육 코치입니다. 한국 중학생 대상입니다.\n\n1단계 완성 문장: "' + inputSentence + '"' + ctx + '\n\n[2단계: 구체성 높이기]\n이 문장에 숫자, 조건, 형식 등을 추가해 더 구체적으로 만든 버전 3개를 제안하세요. 각 버전에서 구체성을 높인 핵심 구절도 알려주세요.\n\nJSON으로만 응답:\n{"explanation":"구체성이란 원하는 내용을 세밀하게 표현하는 것입니다. 예시 1문장","problem":"현재 문장에서 더 구체화할 수 있는 점 1문장","options":[{"text":"구체적으로 바꾼 버전1","highlight":"이 버전에서 구체성을 높인 핵심 구절"},{"text":"구체적으로 바꾼 버전2","highlight":"이 버전에서 구체성을 높인 핵심 구절"},{"text":"구체적으로 바꾼 버전3","highlight":"이 버전에서 구체성을 높인 핵심 구절"}]}',
+      3: '당신은 AI 프롬프트 교육 코치입니다. 한국 중학생 대상입니다.\n\n2단계 완성 문장: "' + inputSentence + '"' + ctx + '\n\n[3단계: 목적 추가하기]\n이 문장에 목적(왜 필요한지, 어떻게 사용할지)을 추가한 버전 3개를 제안하세요.\n\n⚠️ 중요: 목적은 반드시 문장의 맨 앞에 배치하세요. 형식: "[목적을 나타내는 구절] + 기존 문장" 순서로 작성하세요.\n예시: "학교 발표 준비를 위해, ..." 또는 "친구들과 추억을 남기려고, ..." 처럼 목적이 앞에 와야 합니다.\n\nJSON으로만 응답:\n{"explanation":"목적을 문장 앞에 추가하면 AI가 왜 이 정보가 필요한지 바로 파악할 수 있습니다.","problem":"현재 문장에 목적이 빠진 이유 1문장","options":[{"text":"[목적구절] + 기존문장 형태로 작성한 버전1","highlight":"맨 앞에 추가된 목적 구절"},{"text":"[목적구절] + 기존문장 형태로 작성한 버전2","highlight":"맨 앞에 추가된 목적 구절"},{"text":"[목적구절] + 기존문장 형태로 작성한 버전3","highlight":"맨 앞에 추가된 목적 구절"}]}'
     };
 
     try {
