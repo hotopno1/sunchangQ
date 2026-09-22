@@ -27,7 +27,6 @@
     --shadow: 0 2px 20px rgba(10,40,60,0.09);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; }
   body {
     font-family: 'Noto Sans KR', sans-serif;
     background: var(--bg);
@@ -89,7 +88,9 @@
   }
 
   /* SIDEBAR */
+  .sidebar > * { flex-shrink: 0; }
   .sidebar {
+    align-self: flex-start;
     width: 420px;
     flex-shrink: 0;
     display: flex;
@@ -1093,7 +1094,7 @@
       return;
     }
     try {
-      const res = await fetch(SHEET_API);
+      const res = await fetch(API_BASE + '/api/ranking?sheetUrl=' + encodeURIComponent(SHEET_API));
       const json = await res.json();
       rankData = json.data || [];
       renderRanking();
