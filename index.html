@@ -434,8 +434,8 @@
       <div class="rdesc">닫힌 → 열린 질문으로 전환</div>
     </button>
 
-    <!-- 사이드바 랭킹보드 -->
-    <div style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-top:4px;">
+    <!-- 사이드바 랭킹보드 (내 질문 평가받기 모드에서만 표시) -->
+    <div id="sideRankingBox" style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-top:4px;">
       <div style="background:var(--navy);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;">
         <div style="color:white;font-size:15px;font-weight:700;">🏆 질문 랭킹</div>
         <button onclick="loadSideRanking()" style="background:var(--yellow);color:var(--navy);border:none;border-radius:7px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;">↻ 새로고침</button>
@@ -648,6 +648,8 @@
     const labelId = mode === 'feedback' ? 'label-feedback' : mode === 'generate' ? 'label-generate' : 'label-prompt';
     document.getElementById(labelId).classList.add('selected');
     document.getElementById('infoBar').style.display = mode === 'prompt' ? 'none' : 'flex';
+    // 랭킹보드는 '내 질문 평가받기' 모드에서만 표시
+    document.getElementById('sideRankingBox').style.display = mode === 'feedback' ? 'block' : 'none';
 
     // 프롬프트 모드 상태 초기화
     if (mode !== 'prompt') {
