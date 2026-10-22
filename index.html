@@ -461,6 +461,17 @@
   .recipe-tabs .recipe-btn.r3.active { outline-color: var(--r3); }
   .recipe-tabs .recipe-btn.r4.active { outline-color: var(--r4); }
   .btn-row { display: flex; justify-content: flex-end; }
+  .sid-row { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; }
+  .sid-row label { margin: 0 !important; }
+  .sid-row input {
+    width: 190px; padding: 12px 16px; border: 2.5px solid var(--grey-mid); border-radius: 12px;
+    font-family: inherit; font-size: 22px; font-weight: 700; letter-spacing: 6px; text-align: center;
+    color: var(--navy); background: #FAFCFC; outline: none; transition: border-color 0.14s;
+  }
+  .sid-row input:focus { border-color: var(--mint); background: var(--white); }
+  .sid-row .sid-note { font-size: 14px; color: var(--navy-mid); }
+  .saved-note { margin-top: 18px; padding: 16px 20px; border-radius: 14px; background: var(--mint-light); color: #065050; font-size: 16px; line-height: 1.7; }
+  .saved-note strong { font-size: 18px; }
   .fb-side { position: sticky; top: 100px; }
   .fb-side #sideRankingBox { margin-top: 0 !important; }
   .fb-side #sideRankingList { max-height: 560px !important; }
@@ -538,8 +549,8 @@
 
     #stepBar1, #stepBar2, #stepBar3 { font-size: 14px !important; padding: 11px 4px !important; }
     #stepContent textarea { min-height: 80px; }
-    #studentIdInput { min-width: 0 !important; width: 100%; font-size: 19px !important; }
-    #rankSaveBtn { width: 100%; }
+    .sid-row { gap: 8px; margin-bottom: 14px; }
+    .sid-row input { width: 100%; font-size: 20px; }
     #rankingModal > div { margin: 12px !important; padding: 20px 16px !important; }
     .history-item { font-size: 13px; }
   }
@@ -706,6 +717,13 @@
           </div>
 
           <div class="input-block">
+            <div class="sid-row">
+              <label for="studentIdInput">🎫 학번 <span style="font-size:13px;color:#EF4444;">*필수</span></label>
+              <input id="studentIdInput" type="text" inputmode="numeric" maxlength="4" placeholder="1203" autocomplete="off"
+                oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+                onkeydown="if(event.key==='Enter')document.getElementById('questionInput').focus()">
+              <span class="sid-note">🔒 학번은 선생님만 볼 수 있어요</span>
+            </div>
             <label for="questionInput">✏️ 내가 만든 질문을 입력하세요</label>
             <textarea id="questionInput" placeholder="여기에 질문을 써보세요…" maxlength="300" oninput="updateChar()"></textarea>
             <div class="char-count"><span id="charCount">0</span> / 300</div>
@@ -980,11 +998,15 @@
     const btn = document.getElementById('runBtn');
     const question = document.getElementById('questionInput').value.trim();
     if (!question) { alert('질문을 먼저 입력해주세요!'); document.getElementById('questionInput').focus(); return; }
+    const sidInput = document.getElementById('studentIdInput');
+    const studentId = sidInput.value.trim();
+    if (!/^\d{4}$/.test(studentId)) { alert('학번 4자리 숫자를 먼저 입력해주세요! (예: 1203)'); sidInput.focus(); return; }
     btn.disabled = true;
     showLoading();
     try {
-      const { result } = await callScript({ action: 'coach', mode: 'feedback', recipe: currentRecipe, question: question });
+      const { result } = await callScript({ action: 'coach', mode: 'feedback', recipe: currentRecipe, question: question, studentId: studentId });
       renderFeedback(result, question);
+      loadSideRanking();
       addHistory(currentRecipe, question, result.score);
     } catch (e) {
       document.getElementById('resultContent').innerHTML = '<div style="padding:28px;color:#EF4444;text-align:center;font-size:18px;">⚠️ 오류가 발생했습니다.<br><small>' + e.message + '</small></div>';
@@ -1201,18 +1223,8 @@
       '<div class="feedback-section fb-improve"><div class="fb-head">💡 이렇게 발전시켜봐요</div><div class="fb-body">' + d.improve + '</div></div>' +
       '<div class="feedback-section fb-revised"><div class="fb-head">✨ 개선된 질문 예시</div><div class="fb-body">' + d.revised + '</div></div>' +
       '<div style="margin-top:14px;padding:14px 18px;background:var(--yellow-light);border-radius:12px;font-size:18px;color:#7A6000;">💬 ' + d.tip + '</div>' +
-      '<div style="margin-top:20px;padding:24px 26px;background:linear-gradient(135deg,#FFFBE0,#FFF3C4);border:3px solid var(--yellow);border-radius:16px;box-shadow:0 4px 18px rgba(255,214,0,0.25);">' +
-      '<div style="font-size:23px;font-weight:900;color:var(--navy);margin-bottom:6px;">🏆 내 질문을 랭킹 보드에 올려보세요!</div>' +
-      '<div style="font-size:16px;color:#7A6000;margin-bottom:14px;">학번을 입력하고 등록하면 질문 랭킹에 바로 나타나요.</div>' +
-      '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">' +
-      '<input id="studentIdInput" type="text" inputmode="numeric" maxlength="4" placeholder="학번 4자리 (예: 1203)" ' +
-      'oninput="this.value=this.value.replace(/[^0-9]/g,\'\')" onkeydown="if(event.key===\'Enter\')saveToRanking()" ' +
-      'style="flex:1;min-width:200px;padding:16px 18px;border:2.5px solid #E6C200;border-radius:12px;font-family:inherit;font-size:22px;font-weight:700;letter-spacing:4px;outline:none;background:white;">' +
-      '<button id="rankSaveBtn" onclick="saveToRanking()" style="padding:16px 34px;background:var(--navy);color:var(--yellow);border:none;border-radius:12px;font-family:inherit;font-size:20px;font-weight:900;cursor:pointer;">🏆 등록하기</button>' +
-      '</div>' +
-      '<div style="font-size:15px;color:var(--navy-mid);margin-top:12px;">🔒 학번은 선생님만 확인할 수 있고, 랭킹 보드에는 질문과 점수만 공개돼요.</div>' +
-      '</div>';
-    lastFeedback = { question: q, score: d.score, grade: d.grade, recipe: currentRecipe };
+      '<div class="saved-note"><strong>✅ 평가 기록이 저장됐어요</strong><br>' +
+      '랭킹 보드에는 지금까지 받은 점수 중 <b>내 최고 점수</b>만 올라가요. 더 좋은 질문으로 다시 도전해 보세요!</div>';
   }
 
   function renderGenerated(d, recipe) {
@@ -1314,32 +1326,6 @@
   loadSideRanking();
   let rankData = [];
   let rankFilter = 'all';
-
-  let lastFeedback = null;
-
-  async function saveToRanking() {
-    const input = document.getElementById('studentIdInput');
-    const btn = document.getElementById('rankSaveBtn');
-    const studentId = input ? input.value.trim() : '';
-    if (!/^\d{4}$/.test(studentId)) {
-      alert('학번 4자리 숫자를 입력해주세요! (예: 1203)');
-      if (input) input.focus();
-      return;
-    }
-    if (!lastFeedback) { alert('먼저 질문을 평가받아주세요!'); return; }
-    btn.disabled = true;
-    btn.textContent = '등록 중...';
-    try {
-      await callScript(Object.assign({ action: 'rank_save' }, lastFeedback, { studentId: studentId }));
-      btn.textContent = '✅ 등록 완료';
-      input.disabled = true;
-      loadSideRanking();
-    } catch (e) {
-      alert('오류가 발생했어요: ' + e.message);
-      btn.disabled = false;
-      btn.textContent = '🏆 등록하기';
-    }
-  }
 
   async function openRanking() {
     document.getElementById('rankingModal').style.display = 'block';

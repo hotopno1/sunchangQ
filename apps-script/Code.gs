@@ -3,7 +3,9 @@
  *
  * 이 파일 하나가 예전 Railway 서버(server.js)가 하던 일을 모두 대신합니다.
  *  1) Claude API 호출 (질문 생성 / 질문 평가 / AI 프롬프트 다듬기)
- *  2) 랭킹 저장 및 조회 (이 스크립트가 붙어 있는 스프레드시트)
+ *  2) 질문 평가 기록 저장 및 랭킹 조회 (이 스크립트가 붙어 있는 스프레드시트)
+ *     - 학생이 평가받을 때마다 점수와 상관없이 모든 기록이 시트에 저장됩니다.
+ *     - 랭킹 보드에는 학번별 최고 점수 1개만 공개됩니다.
  *
  * [처음 설정]
  *  1. 구글 스프레드시트를 하나 만듭니다. (예: 'AI 질문 코치 랭킹')
@@ -46,7 +48,6 @@ function doPost(e) {
     var action = body.action || 'coach';
 
     if (action === 'coach') return jsonOut(handleCoach(body));
-    if (action === 'rank_save') return jsonOut(handleRankSave(body));
     if (action === 'rank_list') return jsonOut({ success: true, data: readRanking() });
 
     return jsonOut({ success: false, error: '알 수 없는 요청입니다: ' + action });
@@ -206,35 +207,37 @@ function handleCoach(body) {
 
   var recipe = Number(body.recipe);
   if (!RECIPE_NAMES[recipe]) return { success: false, error: '레시피를 선택해주세요.' };
+  var studentId = String(body.studentId || '');
+  if (mode === 'feedback' && !/^\d{4}$/.test(studentId)) return { success: false, error: '학번 4자리 숫자를 입력해주세요.' };
   if (mode === 'feedback' && !body.question) return { success: false, error: '질문을 입력해주세요.' };
   if (mode === 'generate' && !body.topic) return { success: false, error: '주제를 입력해주세요.' };
   if (mode !== 'feedback' && mode !== 'generate') return { success: false, error: '알 수 없는 모드입니다.' };
 
   var prompt = buildRecipePrompt(recipe, mode, String(body.question || ''), String(body.topic || ''));
-  return { success: true, result: parseJsonLoose(askClaude(prompt)) };
+  var result = parseJsonLoose(askClaude(prompt));
+
+  // 질문 평가는 점수와 상관없이 모두 저장 (점수는 AI가 매긴 값을 서버가 직접 기록)
+  if (mode === 'feedback') saveEvaluation(recipe, String(body.question), result, studentId);
+
+  return { success: true, result: result };
 }
 
-function handleRankSave(body) {
-  var studentId = String(body.studentId || '');
-  if (!/^\d{4}$/.test(studentId)) return { success: false, error: '학번 4자리 숫자를 입력해주세요.' };
-  if (!body.question) return { success: false, error: '질문이 없습니다.' };
-
-  // 여러 학생이 동시에 눌러도 기록이 섞이지 않도록 순서를 세움
+function saveEvaluation(recipe, question, result, studentId) {
+  // 여러 학생이 동시에 평가받아도 기록이 섞이지 않도록 순서를 세움
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
     getSheet().appendRow([
-      body.recipe,
-      body.question,
-      body.score,
-      body.grade,
+      recipe,
+      question,
+      Number(result.score) || 0,
+      result.grade || '',
       Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyy-MM-dd HH:mm'),
       "'" + studentId          // 앞의 ' 는 0으로 시작하는 학번이 숫자로 바뀌지 않게 막아줌
     ]);
   } finally {
     lock.releaseLock();
   }
-  return { success: true };
 }
 
 // ─────────────────────────────────────────────
@@ -251,20 +254,25 @@ function getSheet() {
 
 function readRanking() {
   var rows = getSheet().getDataRange().getValues();
-  var data = [];
+  var best = {};   // 학번 → 그 학생의 최고 점수 기록
   for (var i = 1; i < rows.length; i++) {
     var r = rows[i];
     if (!r[1] || r[2] === '' || r[2] === null) continue;
-    data.push({
-      recipe: r[0],
-      question: r[1],
-      score: r[2],
-      grade: r[3],
-      timestamp: r[4]
-      // 학번(r[5])은 내보내지 않음 — 시트에서 선생님만 확인
-    });
+    var id = String(r[5] || '').replace(/^'/, '') || ('row' + i);
+    var score = Number(r[2]);
+    if (!best[id] || score > best[id].score) {
+      best[id] = {
+        recipe: r[0],
+        question: r[1],
+        score: score,
+        grade: r[3],
+        timestamp: r[4]
+        // 학번은 내보내지 않음 — 시트에서 선생님만 확인
+      };
+    }
   }
-  data.sort(function (a, b) { return Number(b.score) - Number(a.score); });
+  var data = Object.keys(best).map(function (k) { return best[k]; });
+  data.sort(function (a, b) { return b.score - a.score; });
   return data;
 }
 
