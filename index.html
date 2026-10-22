@@ -804,8 +804,22 @@
 </div>
 
 <script>
-  const API_BASE = 'https://sunchangq-production.up.railway.app';
-  const SHEET_API = 'https://script.google.com/macros/s/AKfycby6SIn1Lccf6JpzN63ql4PscvFO79EkVV5zhqhV36oyg-1wcW2EGPcWL8SJ_2elKFrZIg/exec';
+  // ↓↓↓ Apps Script 웹 앱 URL을 여기에 붙여넣으세요 (배포 후 나오는 .../exec 주소) ↓↓↓
+  const SCRIPT_API = 'https://script.google.com/macros/s/AKfycby3mZchYWvQPlnw9AUZ-YJJzfYJFLzq-MpuLRhMZo8B-TgaPdxZhW6nYd-253tDRwUCow/exec';
+
+  // Apps Script 호출 공용 함수
+  // Content-Type을 text/plain으로 보내야 브라우저가 사전 확인(preflight) 요청을 생략해 CORS 오류가 나지 않습니다.
+  async function callScript(payload) {
+    if (SCRIPT_API.indexOf('http') !== 0) throw new Error('Apps Script URL이 아직 설정되지 않았어요.');
+    const res = await fetch(SCRIPT_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json().catch(() => { throw new Error('서버 응답을 읽을 수 없어요.'); });
+    if (!json.success) throw new Error(json.error || '서버 오류');
+    return json;
+  }
 
   const RECIPES = {
     1: { emoji: '🔀', color: 'var(--r1)', title: '레시피 1 · 5W1H 변형하기', desc: 'who / when / where / what / why / how 중 하나를 골라, <strong>"만약에(if)"</strong>를 추가해 상상력 질문으로 바꾸는 기법입니다.', tip: '💡 예: "이순신 장군은 누구인가요?" → "만약 이순신 장군에게 거북선이 없었다면 전쟁은 어떻게 달라졌을까요?"' },
@@ -880,9 +894,7 @@
     btns.forEach(b => b.disabled = true);
     box.innerHTML = '<div class="loading-wrap"><div class="spinner"></div><p>AI가 레시피 ' + recipe + '로 질문을 만들고 있어요…</p></div>';
     try {
-      const res = await fetch(API_BASE + '/api/coach', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ recipe: recipe, mode: 'generate', topic: topic }) });
-      if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || '서버 오류'); }
-      const { result } = await res.json();
+      const { result } = await callScript({ action: 'coach', mode: 'generate', recipe: recipe, topic: topic });
       genCache[key] = result;
       if (recipe === genRecipe) box.innerHTML = renderGenerated(result, recipe);
     } catch (e) {
@@ -971,9 +983,7 @@
     btn.disabled = true;
     showLoading();
     try {
-      const res = await fetch(API_BASE + '/api/coach', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ recipe: currentRecipe, mode: 'feedback', question: question }) });
-      if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || '서버 오류'); }
-      const { result } = await res.json();
+      const { result } = await callScript({ action: 'coach', mode: 'feedback', recipe: currentRecipe, question: question });
       renderFeedback(result, question);
       addHistory(currentRecipe, question, result.score);
     } catch (e) {
@@ -987,22 +997,14 @@
     updateStepBar(step);
     stepContent.innerHTML = '<div class="loading-wrap"><div class="spinner"></div><p>AI가 ' + step + '단계를 준비 중이에요…</p></div>';
 
-    const ctx = promptStepData.context ? '\n\n[수업 맥락] ' + promptStepData.context + '\n제안하는 문장은 반드시 이 과목과 핵심 키워드에 관련된 내용이 되도록 다듬으세요. 학생이 이 주제를 공부할 때 AI에게 실제로 보낼 만한 문장이어야 합니다.' : '';
-    const stepPrompts = {
-      1: '당신은 AI 프롬프트 교육 코치입니다. 한국 중학생 대상입니다.\n\n학생의 원래 문장: "' + inputSentence + '"' + ctx + '\n\n[1단계: 명확성 높이기]\n이 문장에서 대상/범위/종류가 불분명한 부분을 명확하게 만든 버전 3개를 제안하세요. 각 버전에서 명확성을 높인 핵심 구절도 알려주세요.\n\nJSON으로만 응답:\n{"explanation":"명확성이란 대상과 범위를 분명히 하는 것입니다. 예시 1문장","problem":"원래 문장에서 불명확한 점 1문장","options":[{"text":"명확하게 바꾼 버전1","highlight":"이 버전에서 명확성을 높인 핵심 구절"},{"text":"명확하게 바꾼 버전2","highlight":"이 버전에서 명확성을 높인 핵심 구절"},{"text":"명확하게 바꾼 버전3","highlight":"이 버전에서 명확성을 높인 핵심 구절"}]}',
-      2: '당신은 AI 프롬프트 교육 코치입니다. 한국 중학생 대상입니다.\n\n1단계 완성 문장: "' + inputSentence + '"' + ctx + '\n\n[2단계: 구체성 높이기]\n이 문장에 숫자, 조건, 형식 등을 추가해 더 구체적으로 만든 버전 3개를 제안하세요. 각 버전에서 구체성을 높인 핵심 구절도 알려주세요.\n\nJSON으로만 응답:\n{"explanation":"구체성이란 원하는 내용을 세밀하게 표현하는 것입니다. 예시 1문장","problem":"현재 문장에서 더 구체화할 수 있는 점 1문장","options":[{"text":"구체적으로 바꾼 버전1","highlight":"이 버전에서 구체성을 높인 핵심 구절"},{"text":"구체적으로 바꾼 버전2","highlight":"이 버전에서 구체성을 높인 핵심 구절"},{"text":"구체적으로 바꾼 버전3","highlight":"이 버전에서 구체성을 높인 핵심 구절"}]}',
-      3: '당신은 AI 프롬프트 교육 코치입니다. 한국 중학생 대상입니다.\n\n2단계 완성 문장: "' + inputSentence + '"' + ctx + '\n\n[3단계: 목적 추가하기]\n이 문장에 목적(왜 필요한지, 어떻게 사용할지)을 추가한 버전 3개를 제안하세요.\n\n⚠️ 중요: 목적은 반드시 문장의 맨 앞에 배치하세요. 형식: "[목적을 나타내는 구절] + 기존 문장" 순서로 작성하세요.\n예시: "학교 발표 준비를 위해, ..." 또는 "친구들과 추억을 남기려고, ..." 처럼 목적이 앞에 와야 합니다.\n\nJSON으로만 응답:\n{"explanation":"목적을 문장 앞에 추가하면 AI가 왜 이 정보가 필요한지 바로 파악할 수 있습니다.","problem":"현재 문장에 목적이 빠진 이유 1문장","options":[{"text":"[목적구절] + 기존문장 형태로 작성한 버전1","highlight":"맨 앞에 추가된 목적 구절"},{"text":"[목적구절] + 기존문장 형태로 작성한 버전2","highlight":"맨 앞에 추가된 목적 구절"},{"text":"[목적구절] + 기존문장 형태로 작성한 버전3","highlight":"맨 앞에 추가된 목적 구절"}]}'
-    };
-
     try {
-      const res = await fetch(API_BASE + '/api/coach', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'prompt_analyze', systemPrompt: stepPrompts[step] })
+      const { result } = await callScript({
+        action: 'coach',
+        mode: 'prompt_analyze',
+        step: step,
+        sentence: inputSentence,
+        context: promptStepData.context || ''
       });
-      if (!res.ok) throw new Error('서버 오류');
-      const { result } = await res.json();
-      console.log('Step ' + step + ' result:', JSON.stringify(result));
       renderStepUI(step, result, inputSentence);
     } catch (e) {
       stepContent.innerHTML = '<div style="padding:20px;color:#EF4444;text-align:center;font-size:17px;">⚠️ 오류: ' + e.message + '</div>';
@@ -1238,8 +1240,7 @@
   async function loadSideRanking() {
     document.getElementById('sideRankingList').innerHTML = '<div style="text-align:center;padding:20px;color:var(--grey-mid);font-size:13px;">불러오는 중...</div>';
     try {
-      const res = await fetch(API_BASE + '/api/ranking?sheetUrl=' + encodeURIComponent(SHEET_API));
-      const json = await res.json();
+      const json = await callScript({ action: 'rank_list' });
       sideRankData = json.data || [];
       renderSideRanking();
     } catch (e) {
@@ -1329,13 +1330,7 @@
     btn.disabled = true;
     btn.textContent = '등록 중...';
     try {
-      const res = await fetch(API_BASE + '/api/ranking', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(Object.assign({}, lastFeedback, { studentId: studentId, sheetUrl: SHEET_API }))
-      });
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(json.error || '서버 오류');
+      await callScript(Object.assign({ action: 'rank_save' }, lastFeedback, { studentId: studentId }));
       btn.textContent = '✅ 등록 완료';
       input.disabled = true;
       loadSideRanking();
@@ -1349,13 +1344,12 @@
   async function openRanking() {
     document.getElementById('rankingModal').style.display = 'block';
     document.getElementById('rankingList').innerHTML = '<div style="text-align:center;padding:30px;color:var(--navy-mid);">불러오는 중...</div>';
-    if (SHEET_API === '여기에-Apps-Script-URL-입력') {
+    if (SCRIPT_API.indexOf('http') !== 0) {
       document.getElementById('rankingList').innerHTML = '<div style="text-align:center;padding:30px;color:#EF4444;">⚠️ Apps Script URL을 설정해주세요!</div>';
       return;
     }
     try {
-      const res = await fetch(API_BASE + '/api/ranking?sheetUrl=' + encodeURIComponent(SHEET_API));
-      const json = await res.json();
+      const json = await callScript({ action: 'rank_list' });
       rankData = json.data || [];
       renderRanking();
     } catch (e) {
